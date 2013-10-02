@@ -5,9 +5,13 @@ using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using System.Device.Location;
+
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+
 using NavAR.Resources;
+using Windows.Devices.Geolocation;
 
 namespace NavAR
 {
@@ -20,6 +24,34 @@ namespace NavAR
 
             // Sample code to localize the ApplicationBar
             //BuildLocalizedApplicationBar();
+
+            Loaded += MainPage_Loaded;
+        }
+
+        /// <summary>
+        /// Event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateMap();
+        }
+
+        /// <summary>
+        /// Helper method
+        /// </summary>
+        private async void UpdateMap()
+        {
+            Geolocator geolocator = new Geolocator();
+            geolocator.DesiredAccuracyInMeters = 5;
+
+            Geoposition position = await geolocator.GetGeopositionAsync(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(30));
+
+            GeoCoordinate gpsCoordinate = new GeoCoordinate(position.Coordinate.Latitude, position.Coordinate.Longitude);
+
+            //MyLocationMap.SetView(new GeoCoordinate(41.8988D, -87.6231D), 17D); // Chicago
+            MyLocationMap.SetView(gpsCoordinate, 17d);
         }
 
         // Sample code for building a localized ApplicationBar
