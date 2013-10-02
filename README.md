@@ -8,9 +8,7 @@ TODO:
 Transit directions can be retrieved via Google or HERE APIs. Each with it pros and cons.
 
 Google Directions API
-- .NET API already exists 
-    https://github.com/maximn/google-maps clone and add as an existing project to the NavAR project
-    
+- .NET API already exists (https://github.com/maximn/google-maps clone and add as an existing project to the NavAR project)
 - Needs to be ported to be used in Windows Phone project
 - Need to figure out which Map APIs can be used to draw the directions (Google map vs Windows Phone map vs HERE map)
 
