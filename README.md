@@ -3,6 +3,8 @@ NavAR
 
 CS 498  Mobile Augmented Reality Project
 
+TODO:
+-----
 Transit directions can be retrieved via Google or HERE APIs. Each with it pros and cons.
 
 Google Directions API
