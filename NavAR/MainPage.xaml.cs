@@ -7,11 +7,10 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using System.Device.Location;
 
+using Windows.Devices.Geolocation;
+
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-
-using NavAR.Resources;
-using Windows.Devices.Geolocation;
 
 namespace NavAR
 {
@@ -39,7 +38,7 @@ namespace NavAR
         }
 
         /// <summary>
-        /// Helper method
+        /// Helper method to update MyLocationMap with current GPS coordinates
         /// </summary>
         private async void UpdateMap()
         {
@@ -50,7 +49,6 @@ namespace NavAR
 
             GeoCoordinate gpsCoordinate = new GeoCoordinate(position.Coordinate.Latitude, position.Coordinate.Longitude);
 
-            //MyLocationMap.SetView(new GeoCoordinate(41.8988D, -87.6231D), 17D); // Chicago
             MyLocationMap.SetView(gpsCoordinate, 17d);
         }
 
