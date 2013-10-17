@@ -31,7 +31,9 @@ namespace NavAR
         private static GeoCoordinate MyCoordinate = null;
         private static HashSet<MTDService.Stop> MyBusStops = new HashSet<Stop>();
         private double _accuracy = 0.0;
-
+        //route variables
+        RouteQuery MyQuery = null;
+        List<GeoCoordinate> MyCoordinates = new List<GeoCoordinate>();
         // Constructor
         public MainPage()
         {
@@ -180,14 +182,29 @@ namespace NavAR
         {
             if (e.Error == null)
             {
-                if (e.Result.Count > 0)
-                {
-                    MapAddress address = e.Result[0].Information.Address;
-                    String msgBoxText = "";
                 
-                    if (address.Country.Length > 0) msgBoxText += "\n" + address.Country;
-                    MessageBox.Show(msgBoxText, "Map Explorer", MessageBoxButton.OK);
-                } 
+                MyQuery = new RouteQuery();
+                //emtpy coordinates from previous queries
+                MyCoordinates.Clear();
+                //add own coordinate
+                MyCoordinates.Add(MyCoordinate);
+                //add destination coordinate
+                MyCoordinates.Add(e.Result[0].GeoCoordinate);
+                MyQuery.Waypoints = MyCoordinates;
+                MyQuery.QueryCompleted += MyQuery_QueryCompleted;
+                MyQuery.QueryAsync();
+                MyReverseGeocodeQuery.Dispose();
+            }
+        }
+
+        private void MyQuery_QueryCompleted(object sender, QueryCompletedEventArgs<Microsoft.Phone.Maps.Services.Route> e)
+        {
+            if (e.Error == null)
+            {
+                Microsoft.Phone.Maps.Services.Route MyRoute = e.Result;
+                MapRoute MyMapRoute = new MapRoute(MyRoute);
+                MyMap.AddRoute(MyMapRoute);
+                MyQuery.Dispose();
             }
         }
 
