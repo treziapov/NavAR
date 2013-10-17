@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="51ea906b-b536-489c-b3b3-2aca40f89b14" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>true</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings>
+      <CollectionMapping TypeName="System.Collections.ObjectModel.ObservableCollection`1" Category="List" />
+    </CollectionMappings>
+    <GenerateSerializableTypes>false</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://developer.cumtd.com/api/v2.2/" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Service.xsd" MetadataType="Schema" ID="20feb78f-e1cc-4cbd-bc87-a619eb69b3a2" SourceId="1" SourceUrl="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd2" />
+    <MetadataFile FileName="Service1.xsd" MetadataType="Schema" ID="fff16333-57e7-4fe0-9de9-6f5a6681684d" SourceId="1" SourceUrl="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd4" />
+    <MetadataFile FileName="Service.wsdl" MetadataType="Wsdl" ID="b10fed47-c26f-4c08-abb0-5e97468b44c6" SourceId="1" SourceUrl="http://developer.cumtd.com/api/v2.2/Service.svc?wsdl" />
+    <MetadataFile FileName="Service2.xsd" MetadataType="Schema" ID="4e13adbe-aec7-4f76-a026-342861e76f6d" SourceId="1" SourceUrl="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd3" />
+    <MetadataFile FileName="Service3.xsd" MetadataType="Schema" ID="15f97497-1c07-4b0a-a092-3d2b167e69ad" SourceId="1" SourceUrl="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd1" />
+    <MetadataFile FileName="Service4.xsd" MetadataType="Schema" ID="477d2b9d-141d-4f73-bef2-960f1e11380b" SourceId="1" SourceUrl="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd5" />
+    <MetadataFile FileName="Service5.xsd" MetadataType="Schema" ID="4918e184-5680-4bdc-90a7-d01df6335cb7" SourceId="1" SourceUrl="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd0" />
+    <MetadataFile FileName="Service.disco" MetadataType="Disco" ID="f6abdfd4-88a7-4716-a6d8-405b0c55804c" SourceId="1" SourceUrl="http://developer.cumtd.com/api/v2.2/Service.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

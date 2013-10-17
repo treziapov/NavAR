@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:i0="Xml" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:i1="Json" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Service" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="WSHttpBinding_IWsService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <wsaw:UsingAddressing />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd5" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd0" namespace="Xml" />
+      <xsd:import schemaLocation="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd1" namespace="Json" />
+      <xsd:import schemaLocation="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd2" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/Cumtd.Developer.Api" />
+      <xsd:import schemaLocation="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Cumtd.Developer.Api.TripPlanner" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IWsService_GetApiUsage_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetApiUsage" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetApiUsage_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetApiUsageResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetCalendarDatesByDate_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCalendarDatesByDate" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetCalendarDatesByDate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCalendarDatesByDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetCalendarDatesByService_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCalendarDatesByService" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetCalendarDatesByService_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCalendarDatesByServiceResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetDeparturesByStop_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDeparturesByStop" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetDeparturesByStop_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDeparturesByStopResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetLastFeedUpdate_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetLastFeedUpdate" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetLastFeedUpdate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetLastFeedUpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetPlannedTripsByLatLon_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPlannedTripsByLatLon" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetPlannedTripsByLatLon_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPlannedTripsByLatLonResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetPlannedTripsByStops_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPlannedTripsByStops" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetPlannedTripsByStops_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPlannedTripsByStopsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetReroutes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetReroutes" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetReroutes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetReroutesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetReroutesByRoute_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetReroutesByRoute" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetReroutesByRoute_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetReroutesByRouteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetRoute_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetRoute" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetRoute_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetRouteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetRoutes_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetRoutes" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetRoutes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetRoutesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetRoutesByStop_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetRoutesByStop" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetRoutesByStop_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetRoutesByStopResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetShape_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetShape" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetShape_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetShapeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetShapeBetweenStops_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetShapeBetweenStops" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetShapeBetweenStops_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetShapeBetweenStopsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStop_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetStop" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStop_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStops_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetStops" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStops_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStopsBySearch_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopsBySearch" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStopsBySearch_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopsBySearchResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStopsByLatLon_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopsByLatLon" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStopsByLatLon_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopsByLatLonResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStopTimesByTrip_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopTimesByTrip" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStopTimesByTrip_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopTimesByTripResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStopTimesByStop_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopTimesByStop" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetStopTimesByStop_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetStopTimesByStopResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetTrip_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTrip" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetTrip_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTripResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetTripsByBlock_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTripsByBlock" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetTripsByBlock_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTripsByBlockResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetTripsByRoute_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetTripsByRoute" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetTripsByRoute_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetTripsByRouteResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetVehicle_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVehicle" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetVehicle_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVehicleResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetVehicles_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVehicles" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetVehicles_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVehiclesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetVehiclesByRoute_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetVehiclesByRoute" />
+  </wsdl:message>
+  <wsdl:message name="IWsService_GetVehiclesByRoute_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetVehiclesByRouteResponse" />
+  </wsdl:message>
+  <wsdl:portType msc:usingSession="false" name="IWsService">
+    <wsdl:operation name="GetApiUsage">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetApiUsage" message="tns:IWsService_GetApiUsage_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetApiUsageResponse" message="tns:IWsService_GetApiUsage_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCalendarDatesByDate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetCalendarDatesByDate" message="tns:IWsService_GetCalendarDatesByDate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetCalendarDatesByDateResponse" message="tns:IWsService_GetCalendarDatesByDate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCalendarDatesByService">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetCalendarDatesByService" message="tns:IWsService_GetCalendarDatesByService_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetCalendarDatesByServiceResponse" message="tns:IWsService_GetCalendarDatesByService_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDeparturesByStop">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetDeparturesByStop" message="tns:IWsService_GetDeparturesByStop_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetDeparturesByStopResponse" message="tns:IWsService_GetDeparturesByStop_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLastFeedUpdate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetLastFeedUpdate" message="tns:IWsService_GetLastFeedUpdate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetLastFeedUpdateResponse" message="tns:IWsService_GetLastFeedUpdate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPlannedTripsByLatLon">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetPlannedTripsByLatLon" message="tns:IWsService_GetPlannedTripsByLatLon_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetPlannedTripsByLatLonResponse" message="tns:IWsService_GetPlannedTripsByLatLon_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPlannedTripsByStops">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetPlannedTripsByStops" message="tns:IWsService_GetPlannedTripsByStops_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetPlannedTripsByStopsResponse" message="tns:IWsService_GetPlannedTripsByStops_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetReroutes">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetReroutes" message="tns:IWsService_GetReroutes_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetReroutesResponse" message="tns:IWsService_GetReroutes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetReroutesByRoute">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetReroutesByRoute" message="tns:IWsService_GetReroutesByRoute_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetReroutesByRouteResponse" message="tns:IWsService_GetReroutesByRoute_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRoute">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetRoute" message="tns:IWsService_GetRoute_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetRouteResponse" message="tns:IWsService_GetRoute_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRoutes">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetRoutes" message="tns:IWsService_GetRoutes_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetRoutesResponse" message="tns:IWsService_GetRoutes_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRoutesByStop">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetRoutesByStop" message="tns:IWsService_GetRoutesByStop_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetRoutesByStopResponse" message="tns:IWsService_GetRoutesByStop_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetShape">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetShape" message="tns:IWsService_GetShape_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetShapeResponse" message="tns:IWsService_GetShape_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetShapeBetweenStops">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetShapeBetweenStops" message="tns:IWsService_GetShapeBetweenStops_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetShapeBetweenStopsResponse" message="tns:IWsService_GetShapeBetweenStops_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStop">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetStop" message="tns:IWsService_GetStop_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetStopResponse" message="tns:IWsService_GetStop_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStops">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetStops" message="tns:IWsService_GetStops_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetStopsResponse" message="tns:IWsService_GetStops_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStopsBySearch">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetStopsBySearch" message="tns:IWsService_GetStopsBySearch_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetStopsBySearchResponse" message="tns:IWsService_GetStopsBySearch_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStopsByLatLon">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetStopsByLatLon" message="tns:IWsService_GetStopsByLatLon_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetStopsByLatLonResponse" message="tns:IWsService_GetStopsByLatLon_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStopTimesByTrip">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetStopTimesByTrip" message="tns:IWsService_GetStopTimesByTrip_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetStopTimesByTripResponse" message="tns:IWsService_GetStopTimesByTrip_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetStopTimesByStop">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetStopTimesByStop" message="tns:IWsService_GetStopTimesByStop_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetStopTimesByStopResponse" message="tns:IWsService_GetStopTimesByStop_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTrip">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetTrip" message="tns:IWsService_GetTrip_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetTripResponse" message="tns:IWsService_GetTrip_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTripsByBlock">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetTripsByBlock" message="tns:IWsService_GetTripsByBlock_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetTripsByBlockResponse" message="tns:IWsService_GetTripsByBlock_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetTripsByRoute">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetTripsByRoute" message="tns:IWsService_GetTripsByRoute_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetTripsByRouteResponse" message="tns:IWsService_GetTripsByRoute_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetVehicle">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetVehicle" message="tns:IWsService_GetVehicle_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetVehicleResponse" message="tns:IWsService_GetVehicle_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetVehicles">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetVehicles" message="tns:IWsService_GetVehicles_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetVehiclesResponse" message="tns:IWsService_GetVehicles_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetVehiclesByRoute">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWsService/GetVehiclesByRoute" message="tns:IWsService_GetVehiclesByRoute_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWsService/GetVehiclesByRouteResponse" message="tns:IWsService_GetVehiclesByRoute_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WSHttpBinding_IWsService" type="tns:IWsService">
+    <wsp:PolicyReference URI="#WSHttpBinding_IWsService_policy" />
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetApiUsage">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetApiUsage" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCalendarDatesByDate">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetCalendarDatesByDate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCalendarDatesByService">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetCalendarDatesByService" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDeparturesByStop">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetDeparturesByStop" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLastFeedUpdate">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetLastFeedUpdate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPlannedTripsByLatLon">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetPlannedTripsByLatLon" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetPlannedTripsByStops">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetPlannedTripsByStops" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetReroutes">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetReroutes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetReroutesByRoute">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetReroutesByRoute" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRoute">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetRoute" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRoutes">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetRoutes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRoutesByStop">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetRoutesByStop" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetShape">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetShape" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetShapeBetweenStops">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetShapeBetweenStops" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStop">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetStop" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStops">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetStops" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStopsBySearch">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetStopsBySearch" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStopsByLatLon">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetStopsByLatLon" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStopTimesByTrip">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetStopTimesByTrip" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetStopTimesByStop">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetStopTimesByStop" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTrip">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetTrip" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTripsByBlock">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetTripsByBlock" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetTripsByRoute">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetTripsByRoute" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVehicle">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetVehicle" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVehicles">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetVehicles" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVehiclesByRoute">
+      <soap12:operation soapAction="http://tempuri.org/IWsService/GetVehiclesByRoute" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service">
+    <wsdl:port name="WSHttpBinding_IWsService" binding="tns:WSHttpBinding_IWsService">
+      <soap12:address location="http://developer.cumtd.com/api/v2.2/Service.svc/ws" />
+      <wsa10:EndpointReference>
+        <wsa10:Address>http://developer.cumtd.com/api/v2.2/Service.svc/ws</wsa10:Address>
+      </wsa10:EndpointReference>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

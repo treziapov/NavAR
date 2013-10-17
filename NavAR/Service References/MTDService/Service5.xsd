@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="Xml" elementFormDefault="qualified" targetNamespace="Xml" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="GetApiUsage">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="version" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="method" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="start_date" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="end_date" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetApiUsageResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetApiUsageResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Response">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="status" type="tns:Status" />
+      <xs:element minOccurs="0" maxOccurs="1" name="rqst" type="tns:Request" />
+      <xs:element minOccurs="0" maxOccurs="1" name="calendar_dates" type="tns:ArrayOfCalendarDate" />
+      <xs:element minOccurs="0" maxOccurs="1" name="days" type="tns:ArrayOfUsageDay" />
+      <xs:element minOccurs="0" maxOccurs="1" name="departures" type="tns:ArrayOfDeparture" />
+      <xs:element minOccurs="0" maxOccurs="1" name="reroutes" type="tns:ArrayOfReroute" />
+      <xs:element minOccurs="0" maxOccurs="1" name="routes" type="tns:ArrayOfRoute" />
+      <xs:element minOccurs="0" maxOccurs="1" name="shapes" type="tns:ArrayOfShape" />
+      <xs:element minOccurs="0" maxOccurs="1" name="stops" type="tns:ArrayOfStop" />
+      <xs:element minOccurs="0" maxOccurs="1" name="stop_times" type="tns:ArrayOfStopTime" />
+      <xs:element minOccurs="0" maxOccurs="1" name="trips" type="tns:ArrayOfTrip" />
+      <xs:element minOccurs="0" maxOccurs="1" name="vehicles" type="tns:ArrayOfVehicle" />
+      <xs:element minOccurs="0" maxOccurs="1" name="itineraries" type="tns:ArrayOfItinerary" />
+      <xs:element minOccurs="0" maxOccurs="1" name="last_updated" type="xs:string" />
+    </xs:sequence>
+    <xs:attribute name="time" type="xs:string" />
+    <xs:attribute name="changeset_id" type="xs:string" />
+    <xs:attribute name="new_changeset" type="xs:boolean" use="required" />
+  </xs:complexType>
+  <xs:complexType name="Status">
+    <xs:attribute name="code" type="xs:int" use="required" />
+    <xs:attribute name="msg" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="Request">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="params" type="tns:Parameters" />
+    </xs:sequence>
+    <xs:attribute name="method" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="Parameters">
+    <xs:attribute name="arrive_depart" type="xs:string" />
+    <xs:attribute name="begin_stop_id" type="xs:string" />
+    <xs:attribute name="block_id" type="xs:string" />
+    <xs:attribute name="changeset_id" type="xs:string" />
+    <xs:attribute name="count" type="xs:int" />
+    <xs:attribute name="date" type="xs:string" />
+    <xs:attribute name="destination_lat" type="xs:decimal" />
+    <xs:attribute name="destination_lon" type="xs:decimal" />
+    <xs:attribute name="destination_stop_id" type="xs:string" />
+    <xs:attribute name="end_date" type="xs:string" />
+    <xs:attribute name="end_stop_id" type="xs:string" />
+    <xs:attribute name="lat" type="xs:decimal" />
+    <xs:attribute name="lon" type="xs:decimal" />
+    <xs:attribute name="max_walk" type="xs:decimal" />
+    <xs:attribute name="method" type="xs:string" />
+    <xs:attribute name="minimize" type="xs:string" />
+    <xs:attribute name="origin_lat" type="xs:decimal" />
+    <xs:attribute name="origin_lon" type="xs:decimal" />
+    <xs:attribute name="origin_stop_id" type="xs:string" />
+    <xs:attribute name="pt" type="xs:int" />
+    <xs:attribute name="query" type="xs:string" />
+    <xs:attribute name="route_id" type="xs:string" />
+    <xs:attribute name="service_id" type="xs:string" />
+    <xs:attribute name="shape_id" type="xs:string" />
+    <xs:attribute name="start_date" type="xs:string" />
+    <xs:attribute name="stop_id" type="xs:string" />
+    <xs:attribute name="time" type="xs:string" />
+    <xs:attribute name="vehicle_id" type="xs:string" />
+    <xs:attribute name="version" type="xs:string" />
+    <xs:attribute name="trip_id" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfCalendarDate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="calendar_date" nillable="true" type="tns:CalendarDate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CalendarDate">
+    <xs:attribute name="date" type="xs:string" />
+    <xs:attribute name="service_id" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfUsageDay">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="day" nillable="true" type="tns:UsageDay" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UsageDay">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="versions" type="tns:ArrayOfUsageVersion" />
+    </xs:sequence>
+    <xs:attribute name="date" type="xs:string" />
+    <xs:attribute name="calls" type="xs:decimal" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfUsageVersion">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="version" nillable="true" type="tns:UsageVersion" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UsageVersion">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="methods" type="tns:ArrayOfUsageMethod" />
+    </xs:sequence>
+    <xs:attribute name="number" type="xs:string" />
+    <xs:attribute name="calls" type="xs:decimal" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfUsageMethod">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="method" nillable="true" type="tns:UsageMethod" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="UsageMethod">
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="calls" type="xs:decimal" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfDeparture">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="departure" nillable="true" type="tns:Departure" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Departure">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="route" type="tns:Route" />
+      <xs:element minOccurs="0" maxOccurs="1" name="trip" type="tns:Trip" />
+      <xs:element minOccurs="0" maxOccurs="1" name="origin" type="tns:BusStopReference" />
+      <xs:element minOccurs="0" maxOccurs="1" name="destination" type="tns:BusStopReference" />
+      <xs:element minOccurs="0" maxOccurs="1" name="location" type="tns:Location" />
+    </xs:sequence>
+    <xs:attribute name="vehicle_id" type="xs:string" />
+    <xs:attribute name="is_monitored" type="xs:boolean" use="required" />
+    <xs:attribute name="is_scheduled" type="xs:boolean" use="required" />
+    <xs:attribute name="is_istop" type="xs:boolean" use="required" />
+    <xs:attribute name="stop_id" type="xs:string" />
+    <xs:attribute name="headsign" type="xs:string" />
+    <xs:attribute name="scheduled" type="xs:string" />
+    <xs:attribute name="expected" type="xs:string" />
+    <xs:attribute name="expected_mins" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="Route">
+    <xs:attribute name="route_color" type="xs:string" />
+    <xs:attribute name="route_id" type="xs:string" />
+    <xs:attribute name="route_long_name" type="xs:string" />
+    <xs:attribute name="route_short_name" type="xs:string" />
+    <xs:attribute name="route_text_color" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="Trip">
+    <xs:attribute name="trip_id" type="xs:string" />
+    <xs:attribute name="trip_headsign" type="xs:string" />
+    <xs:attribute name="route_id" type="xs:string" />
+    <xs:attribute name="service_id" type="xs:string" />
+    <xs:attribute name="shape_id" type="xs:string" />
+    <xs:attribute name="direction" type="xs:string" />
+    <xs:attribute name="block_id" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="BusStopReference">
+    <xs:attribute name="stop_id" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="Location">
+    <xs:attribute name="lat" type="xs:decimal" use="required" />
+    <xs:attribute name="lon" type="xs:decimal" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfReroute">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="reroute" nillable="true" type="tns:Reroute" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Reroute">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="affected_routes" type="tns:ArrayOfRoute" />
+    </xs:sequence>
+    <xs:attribute name="start_date" type="xs:string" />
+    <xs:attribute name="end_date" type="xs:string" />
+    <xs:attribute name="message" type="xs:string" />
+    <xs:attribute name="description" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfRoute">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="route" nillable="true" type="tns:Route" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfShape">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="shape" nillable="true" type="tns:Shape" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Shape">
+    <xs:attribute name="shape_dist_traveled" type="xs:decimal" use="required" />
+    <xs:attribute name="shape_pt_lat" type="xs:decimal" use="required" />
+    <xs:attribute name="shape_pt_lon" type="xs:decimal" use="required" />
+    <xs:attribute name="shape_pt_sequence" type="xs:int" use="required" />
+    <xs:attribute name="stop_id" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfStop">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="stop" nillable="true" type="tns:Stop" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Stop">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="stop_points" type="tns:ArrayOfStopPoint" />
+    </xs:sequence>
+    <xs:attribute name="stop_id" type="xs:string" />
+    <xs:attribute name="code" type="xs:string" />
+    <xs:attribute name="stop_name" type="xs:string" />
+    <xs:attribute name="distance" type="xs:decimal" />
+    <xs:attribute name="percent_match" type="xs:decimal" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfStopPoint">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="stop_point" nillable="true" type="tns:StopPoint" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="StopPoint">
+    <xs:attribute name="stop_id" type="xs:string" />
+    <xs:attribute name="code" type="xs:string" />
+    <xs:attribute name="stop_lat" type="xs:decimal" />
+    <xs:attribute name="stop_lon" type="xs:decimal" />
+    <xs:attribute name="stop_name" type="xs:string" />
+    <xs:attribute name="distance" type="xs:decimal" />
+    <xs:attribute name="rank" type="xs:int" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfStopTime">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="stop_time" nillable="true" type="tns:StopTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="StopTime">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="trip" type="tns:Trip" />
+      <xs:element minOccurs="0" maxOccurs="1" name="stop_point" type="tns:StopPoint" />
+      <xs:element minOccurs="0" maxOccurs="1" name="stop_id" type="xs:string" />
+    </xs:sequence>
+    <xs:attribute name="arrival_time" type="xs:string" />
+    <xs:attribute name="departure_time" type="xs:string" />
+    <xs:attribute name="stop_sequence" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfTrip">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="trip" nillable="true" type="tns:Trip" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfVehicle">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="vehicle" nillable="true" type="tns:Vehicle" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Vehicle">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="trip" type="tns:Trip" />
+      <xs:element minOccurs="0" maxOccurs="1" name="location" type="tns:Location" />
+    </xs:sequence>
+    <xs:attribute name="vehicle_id" type="xs:string" />
+    <xs:attribute name="previous_stop_id" type="xs:string" />
+    <xs:attribute name="next_stop_id" type="xs:string" />
+    <xs:attribute name="origin_stop_id" type="xs:string" />
+    <xs:attribute name="destination_stop_id" type="xs:string" />
+    <xs:attribute name="last_updated" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfItinerary">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="itinerary" nillable="true" type="tns:Itinerary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Itinerary">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="legs" type="tns:ArrayOfLeg" />
+    </xs:sequence>
+    <xs:attribute name="start_time" type="xs:string" />
+    <xs:attribute name="end_time" type="xs:string" />
+    <xs:attribute name="travel_time" type="xs:int" use="required" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfLeg">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="leg" nillable="true" type="tns:Leg" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Leg">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="walk" type="tns:Walk" />
+      <xs:element minOccurs="0" maxOccurs="1" name="services" type="tns:ArrayOfService" />
+    </xs:sequence>
+    <xs:attribute name="type" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="Walk">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="begin" type="tns:Endpoint" />
+      <xs:element minOccurs="0" maxOccurs="1" name="end" type="tns:Endpoint" />
+    </xs:sequence>
+    <xs:attribute name="distance" type="xs:decimal" use="required" />
+    <xs:attribute name="direction" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="Endpoint">
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="time" type="xs:string" />
+    <xs:attribute name="lat" type="xs:decimal" use="required" />
+    <xs:attribute name="lon" type="xs:decimal" use="required" />
+    <xs:attribute name="stop_id" type="xs:string" />
+  </xs:complexType>
+  <xs:complexType name="ArrayOfService">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="service" nillable="true" type="tns:Service" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Service">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="begin" type="tns:Endpoint" />
+      <xs:element minOccurs="0" maxOccurs="1" name="end" type="tns:Endpoint" />
+      <xs:element minOccurs="0" maxOccurs="1" name="route" type="tns:Route" />
+      <xs:element minOccurs="0" maxOccurs="1" name="trip" type="tns:Trip" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="GetCalendarDatesByDate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="date" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCalendarDatesByDateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetCalendarDatesByDateResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCalendarDatesByService">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="service_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCalendarDatesByServiceResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetCalendarDatesByServiceResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDeparturesByStop">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="stop_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="route_id" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="pt" type="xs:int" />
+        <xs:element minOccurs="1" maxOccurs="1" name="count" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDeparturesByStopResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetDeparturesByStopResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLastFeedUpdate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLastFeedUpdateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetLastFeedUpdateResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPlannedTripsByLatLon">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="origin_lat" type="xs:decimal" />
+        <xs:element minOccurs="1" maxOccurs="1" name="origin_lon" type="xs:decimal" />
+        <xs:element minOccurs="1" maxOccurs="1" name="destination_lat" type="xs:decimal" />
+        <xs:element minOccurs="1" maxOccurs="1" name="destination_lon" type="xs:decimal" />
+        <xs:element minOccurs="0" maxOccurs="1" name="date" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="time" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="max_walk" type="xs:decimal" />
+        <xs:element minOccurs="0" maxOccurs="1" name="minimize" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="arrive_depart" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPlannedTripsByLatLonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetPlannedTripsByLatLonResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPlannedTripsByStops">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="origin_stop_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="destination_stop_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="date" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="time" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="max_walk" type="xs:decimal" />
+        <xs:element minOccurs="0" maxOccurs="1" name="minimize" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="arrive_depart" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPlannedTripsByStopsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetPlannedTripsByStopsResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetReroutes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetReroutesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetReroutesResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetReroutesByRoute">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="route_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetReroutesByRouteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetReroutesByRouteResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoute">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="route_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRouteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetRouteResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoutes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoutesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetRoutesResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoutesByStop">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="stop_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRoutesByStopResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetRoutesByStopResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetShape">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="shape_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetShapeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetShapeResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetShapeBetweenStops">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="begin_stop_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="end_stop_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="shape_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetShapeBetweenStopsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetShapeBetweenStopsResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStop">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="stop_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetStopResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStops">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetStopsResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopsBySearch">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="query" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="count" type="xs:int" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopsBySearchResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetStopsBySearchResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopsByLatLon">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="1" maxOccurs="1" name="lat" type="xs:decimal" />
+        <xs:element minOccurs="1" maxOccurs="1" name="lon" type="xs:decimal" />
+        <xs:element minOccurs="1" maxOccurs="1" name="count" type="xs:int" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopsByLatLonResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetStopsByLatLonResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopTimesByTrip">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="trip_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopTimesByTripResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetStopTimesByTripResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopTimesByStop">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="stop_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="route_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="date" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetStopTimesByStopResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetStopTimesByStopResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTrip">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="trip_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTripResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetTripResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTripsByBlock">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="block_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTripsByBlockResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetTripsByBlockResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTripsByRoute">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="route_id" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="changeset_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTripsByRouteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetTripsByRouteResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVehicle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="vehicle_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVehicleResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetVehicleResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVehicles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVehiclesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetVehiclesResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVehiclesByRoute">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+        <xs:element minOccurs="0" maxOccurs="1" name="route_id" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVehiclesByRouteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="GetVehiclesByRouteResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CatchAll">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="key" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CatchAllResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="1" name="CatchAllResult" type="tns:Response" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

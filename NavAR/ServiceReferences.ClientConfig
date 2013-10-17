@@ -1,0 +1,17 @@
+﻿<configuration>
+    <system.serviceModel>
+        <bindings>
+            <customBinding>
+                <binding name="WSHttpBinding_IWsService">
+                    <textMessageEncoding messageVersion="Default" writeEncoding="utf-8" />
+                    <httpTransport maxReceivedMessageSize="2147483647" maxBufferSize="2147483647" />
+                </binding>
+            </customBinding>
+        </bindings>
+        <client>
+            <endpoint address="http://developer.cumtd.com/api/v2.2/Service.svc/ws"
+                binding="customBinding" bindingConfiguration="WSHttpBinding_IWsService"
+                contract="MTDService.IWsService" name="WSHttpBinding_IWsService" />
+        </client>
+    </system.serviceModel>
+</configuration>

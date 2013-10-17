@@ -48,7 +48,7 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="10,10,14,-10"/>
 
-        <maps:Map Name="MyLocationMap" Margin="0,10,0,100" Grid.Row="1"/>
+        <maps:Map Name="MyMap" Margin="0,10,0,100" Grid.Row="1"/>
 
         <!--Uncomment to see an alignment grid to help ensure your controls are
             aligned on common boundaries.  The image has a top margin of -32px to
