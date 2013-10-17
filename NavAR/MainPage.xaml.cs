@@ -12,91 +12,153 @@ using System.Windows.Input;
 using System.Threading;
 using System.IO;
 using System.Xml;
-
-using Windows.Devices.Geolocation;
+using System.Windows.Threading;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using Microsoft.Phone.Maps.Services;
 using Microsoft.Phone.Maps.Controls;
+using Microsoft.Phone.Maps.Services;
+using PhoneServices = Microsoft.Phone.Maps.Services;
 
 using NavAR.MTD;
 using NavAR.MTDService;
+using NavAR.Resources;
+
+using Windows.Devices.Geolocation;
 
 namespace NavAR
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private static ReverseGeocodeQuery MyReverseGeocodeQuery = null;
-        private static GeoCoordinate MyCoordinate = null;
-        private static HashSet<MTDService.Stop> MyBusStops = new HashSet<Stop>();
-        private double _accuracy = 0.0;
-        //route variables
-        RouteQuery MyQuery = null;
-        List<GeoCoordinate> MyCoordinates = new List<GeoCoordinate>();
+        // User location variables
+        private GeoCoordinate MyCoordinate = null;
+        private double GpsAccuracy = 0.0;
+
+        // Local transit variables
+        private HashSet<MTDService.Stop> MyBusStops = new HashSet<Stop>();
+
+        // Route variables
+        private RouteQuery MyQuery = null;
+        private List<GeoCoordinate> MyCoordinates = new List<GeoCoordinate>();
+        private MapRoute MyMapRoute = null;
+        //private ReverseGeocodeQuery MyReverseGeocodeQuery = null;
+
+        // Map graphics
+        private MapLayer MarkerMapLayer = new MapLayer();
+
+        // Timers
+        private DispatcherTimer DrawingTimer = new DispatcherTimer();
+        private DispatcherTimer LocationTimer = new DispatcherTimer();
+        private DispatcherTimer MTDScanTimer = new DispatcherTimer();
+
         // Constructor
         public MainPage()
         {
             InitializeComponent();
 
             // Sample code to localize the ApplicationBar
-            //BuildLocalizedApplicationBar();
+            BuildLocalizedApplicationBar();
 
+            // Fire off logic once the page loads
             Loaded += MainPage_Loaded;
         }
 
         /// <summary>
-        /// Event handler
+        /// Event fired when all main page elements are loaded
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            LocateUser();
+            TimeSpan none = new TimeSpan(0, 0, 0);
+
+            // Set off GPS timer
+            LocationTimer.Tick += new EventHandler(LocateUser);
+            LocationTimer.Interval = none;
+            LocationTimer.Start();
+
+            // Set off drawing timer
+            DrawingTimer.Tick += new EventHandler(DrawMapMarkers);
+            DrawingTimer.Interval = none;
+            DrawingTimer.Start();
+
+            // Set off MTD scanning timer
+            MTDScanTimer.Tick += new EventHandler(LocateBusStops);
+            MTDScanTimer.Interval = none;
+            MTDScanTimer.Start();
         }
 
         /// <summary>
-        /// Helper method to update MyLocationMap with current GPS coordinates
+        /// Use GPS to locate the user and mark his position on map
         /// </summary>
-        private async void LocateUser()
+        private async void LocateUser(object sender, EventArgs e)
         {
             Geolocator geolocator = new Geolocator();
             geolocator.DesiredAccuracy = PositionAccuracy.High;
 
             try
             {
+                // Send a request for user location asynchronously
                 Geoposition currentPosition = await geolocator.GetGeopositionAsync(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(10));
-                _accuracy = currentPosition.Coordinate.Accuracy;
+                GpsAccuracy = currentPosition.Coordinate.Accuracy;
             
+                // Update variables one the request response comes in
+                // Fire events that were blocked
                 Dispatcher.BeginInvoke(() =>
                 {
-                    MyCoordinate = new GeoCoordinate(currentPosition.Coordinate.Latitude, currentPosition.Coordinate.Longitude);
-                    MyMap.SetView(MyCoordinate, 15d);
-                    LocateBusStops();
-                    DrawMapMarkers();
+                    GeoCoordinate newCoordinate = new GeoCoordinate(currentPosition.Coordinate.Latitude, currentPosition.Coordinate.Longitude);
+                    if (MyCoordinate == null)
+                    {
+                        MyCoordinate = newCoordinate;
+                        MyMap.SetView(MyCoordinate, 15d);
+                    }
+                    else if (MyCoordinate != newCoordinate)
+                    {
+                        // Moves Map view to your coordinate, not always desired
+                        // TODO: Add a button for the user to move to current location when it's out of center
+                        //MyMap.SetView(MyCoordinate, MyMap.ZoomLevel);
+                    }
                 });
             }
             catch
             {
-                // Couldn't get current location - location might be disabled in settings
                 MessageBox.Show("Current location cannot be obtained. Check that location service is turned on in phone settings.");
             }
+
+            LocationTimer.Interval = new TimeSpan(0, 0, 5);
+            LocationTimer.Start();
         }
 
-        public void LocateBusStops()
+        /// <summary>
+        /// Use MTD API to locate a specific number of bus stops closest to you
+        /// </summary>
+        public void LocateBusStops(object sender, EventArgs e)
         {
-            MTDService.WsServiceClient client = new MTDService.WsServiceClient();
-            client.GetStopsByLatLonAsync(MTDAPI.API_KEY, (Decimal)MyCoordinate.Latitude, (Decimal)MyCoordinate.Longitude, 10, "");
-            client.GetStopsByLatLonCompleted += GetStopsByLatLonRequest_Completed;
+            if (MyCoordinate != null)
+            {
+                // Initialize API client and send a request
+                MTDService.WsServiceClient client = new MTDService.WsServiceClient();
+                client.GetStopsByLatLonAsync(MTDAPI.API_KEY, (Decimal)MyCoordinate.Latitude, (Decimal)MyCoordinate.Longitude, 10, String.Empty);
+
+                // Set the complete event handler
+                client.GetStopsByLatLonCompleted += GetStopsByLatLonRequest_Completed;
+            }
+
+            MTDScanTimer.Interval = new TimeSpan(0, 0, 10);
+            MTDScanTimer.Start();
         }
 
-        void GetStopsByLatLonRequest_Completed(object sender, MTDService.GetStopsByLatLonCompletedEventArgs e)
+        /// <summary>
+        /// Process and store nearby bus stop information
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void GetStopsByLatLonRequest_Completed(object sender, MTDService.GetStopsByLatLonCompletedEventArgs e)
         {
             MTDService.rsp result = e.Result;
             if (result.stops.Count > 0)
             {
                 MyBusStops = new HashSet<Stop>(result.stops);
-                DrawMapMarkers();
             }
             else
             {
@@ -104,16 +166,19 @@ namespace NavAR
             }
         }
 
-        private void DrawMapMarkers()
+        /// <summary>
+        /// Redraws all points of interest on the map
+        /// </summary>
+        private void DrawMapMarkers(object sender, EventArgs e)
         {
             MyMap.Layers.Clear();
-            MapLayer mapLayer = new MapLayer();
+            MarkerMapLayer = new MapLayer();
          
             // Draw marker for current position
             if (MyCoordinate != null)
             {
-                DrawAccuracyRadius(mapLayer);
-                DrawMapMarker(MyCoordinate, Colors.Red, mapLayer);
+                DrawAccuracyRadius(MarkerMapLayer);
+                DrawMapMarker(MyCoordinate, Colors.Red, MarkerMapLayer);
             }
 
             // Draw markers for nearby bus stops
@@ -121,19 +186,26 @@ namespace NavAR
             {
                 MTDService.StopPoint stopPoint = busStop.stop_points.First();
                 GeoCoordinate busStopCoord = new GeoCoordinate((Double)stopPoint.stop_lat, (Double)stopPoint.stop_lon);
-                DrawMapMarker(busStopCoord, Colors.Blue, mapLayer);
+                DrawMapMarker(busStopCoord, Colors.Blue, MarkerMapLayer);
             }
 
-            MyMap.Layers.Add(mapLayer);
+            MyMap.Layers.Add(MarkerMapLayer);
+
+            // Restart the timer
+            DrawingTimer.Interval = new TimeSpan(0, 0, 5);
+            DrawingTimer.Start();
         }
 
-
+        /// <summary>
+        /// Draw a circle around user's location to show error
+        /// </summary>
+        /// <param name="mapLayer"></param>
         private void DrawAccuracyRadius(MapLayer mapLayer)
         {
             // The ground resolution (in meters per pixel) varies depending on the level of detail
             // and the latitude at which it’s measured. It can be calculated as follows:
             double metersPerPixels = (Math.Cos(MyCoordinate.Latitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (256 * Math.Pow(2, MyMap.ZoomLevel));
-            double radius = _accuracy / metersPerPixels;
+            double radius = GpsAccuracy / metersPerPixels;
 
             Ellipse ellipse = new Ellipse();
             ellipse.Width = radius * 2;
@@ -147,6 +219,12 @@ namespace NavAR
             mapLayer.Add(overlay);
         }
 
+        /// <summary>
+        /// Draws a colored marker for a coordinate on a map layer
+        /// </summary>
+        /// <param name="coordinate"></param>
+        /// <param name="color"></param>
+        /// <param name="mapLayer"></param>
         private void DrawMapMarker(GeoCoordinate coordinate, Color color, MapLayer mapLayer)
         {
             // Create a map marker
@@ -168,60 +246,102 @@ namespace NavAR
             mapLayer.Add(overlay);
         }
         
+        /// <summary>
+        /// Event fired whenever any of the markers are clicked
+        /// Draws a path from user's location to the clicked marker
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Marker_Click(object sender, EventArgs e)
         {
             Polygon p = (Polygon)sender;
             GeoCoordinate geoCoordinate = (GeoCoordinate)p.Tag;
-            MyReverseGeocodeQuery = new ReverseGeocodeQuery();
-            MyReverseGeocodeQuery.GeoCoordinate = new GeoCoordinate(geoCoordinate.Latitude, geoCoordinate.Longitude);
-            MyReverseGeocodeQuery.QueryCompleted += ReverseGeocodeQuery_QueryCompleted;
-            MyReverseGeocodeQuery.QueryAsync();
+
+            MyQuery = new RouteQuery();
+
+            // Emtpy coordinates from previous queries
+            MyCoordinates.Clear();
+
+            // Add own coordinate
+            MyCoordinates.Add(MyCoordinate);
+
+            // Add destination coordinate
+            MyCoordinates.Add(geoCoordinate);
+            MyQuery.Waypoints = MyCoordinates;
+            MyQuery.QueryCompleted += MyQuery_QueryCompleted;
+            MyQuery.QueryAsync(); 
         }
-    
+
+        /// <summary>
+        /// Reverse Gecoding, used to convert geocoordinate (lat,lon) to a physical address (street, country, ...)
+        /// 
+        /// Currently unused. Even setup:
+        ///     MyReverseGeocodeQuery = new ReverseGeocodeQuery();
+        ///     MyReverseGeocodeQuery.GeoCoordinate = new GeoCoordinate(geoCoordinate.Latitude, geoCoordinate.Longitude);
+        ///     MyReverseGeocodeQuery.QueryCompleted += ReverseGeocodeQuery_QueryCompleted;
+        ///     MyReverseGeocodeQuery.QueryAsync();
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ReverseGeocodeQuery_QueryCompleted(object sender, QueryCompletedEventArgs<IList<MapLocation>> e)
         {
             if (e.Error == null)
             {
-                
                 MyQuery = new RouteQuery();
-                //emtpy coordinates from previous queries
+
+                // Emtpy coordinates from previous queries
                 MyCoordinates.Clear();
-                //add own coordinate
+
+                // Add own coordinate
                 MyCoordinates.Add(MyCoordinate);
-                //add destination coordinate
+
+                // Add destination coordinate
                 MyCoordinates.Add(e.Result[0].GeoCoordinate);
                 MyQuery.Waypoints = MyCoordinates;
                 MyQuery.QueryCompleted += MyQuery_QueryCompleted;
                 MyQuery.QueryAsync();
-                MyReverseGeocodeQuery.Dispose();
+                //MyReverseGeocodeQuery.Dispose();
             }
         }
 
-        private void MyQuery_QueryCompleted(object sender, QueryCompletedEventArgs<Microsoft.Phone.Maps.Services.Route> e)
+        /// <summary>
+        /// Processes the route result and displays it on map, clearing the old route
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MyQuery_QueryCompleted(object sender, QueryCompletedEventArgs<PhoneServices.Route> e)
         {
             if (e.Error == null)
             {
-                Microsoft.Phone.Maps.Services.Route MyRoute = e.Result;
-                MapRoute MyMapRoute = new MapRoute(MyRoute);
+                // Remove an existing route
+                if (MyMapRoute != null)
+                {
+                    MyMap.RemoveRoute(MyMapRoute);
+                }
+
+                // Update and draw the new map route
+                MyMapRoute = new MapRoute(e.Result);
                 MyMap.AddRoute(MyMapRoute);
                 MyQuery.Dispose();
             }
         }
 
-        // Sample code for building a localized ApplicationBar
-        //private void BuildLocalizedApplicationBar()
-        //{
-        //    // Set the page's ApplicationBar to a new instance of ApplicationBar.
-        //    ApplicationBar = new ApplicationBar();
+        /// <summary>
+        /// Sample code for building a localized ApplicationBar
+        /// </summary>
+        private void BuildLocalizedApplicationBar()
+        {
+            // Set the page's ApplicationBar to a new instance of ApplicationBar.
+            ApplicationBar = new ApplicationBar();
 
-        //    // Create a new button and set the text value to the localized string from AppResources.
-        //    ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
-        //    appBarButton.Text = AppResources.AppBarButtonText;
-        //    ApplicationBar.Buttons.Add(appBarButton);
+            // Create a new button and set the text value to the localized string from AppResources.
+            ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
+            appBarButton.Text = AppResources.AppBarButtonText;
+            ApplicationBar.Buttons.Add(appBarButton);
 
-        //    // Create a new menu item with the localized string from AppResources.
-        //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
-        //    ApplicationBar.MenuItems.Add(appBarMenuItem);
-        //}
+            // Create a new menu item with the localized string from AppResources.
+            ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
+            ApplicationBar.MenuItems.Add(appBarMenuItem);
+        }
     }
 }
