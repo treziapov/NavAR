@@ -50,6 +50,22 @@
 
         <maps:Map Name="MyMap" Margin="0,10,0,100" Grid.Row="1"/>
 
+        <Path Data="M87.026947,24.16836 L102.66625,48.669857 L94.666451,48.669857 L94.666451,84.674995 L78.666855,84.674995 L78.666855,48.669857 L70.667053,48.669857 z" HorizontalAlignment="Right" Height="18.269" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="9.664" RenderTransformOrigin="0.5,1" Margin="0,0,32.668,431.502" Grid.Row="1">
+            <Path.RenderTransform>
+                <CompositeTransform x:Name="MyTransform" Rotation="0" ScaleX="2.91" TranslateX="-16" TranslateY="-61" ScaleY="3.4"/>
+            </Path.RenderTransform>
+            <Path.Fill>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="White" Offset="0"/>
+                    <GradientStop Color="White" Offset="1"/>
+                    <GradientStop Color="#FEFEFEFE" Offset="0.58"/>
+                    <GradientStop Color="#FEE22828" Offset="0.604"/>
+                    <GradientStop Color="#FEE64C4C" Offset="0.795"/>
+                    <GradientStop Color="#FEFFFFFF" Offset="0.826"/>
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+
         <!--Uncomment to see an alignment grid to help ensure your controls are
             aligned on common boundaries.  The image has a top margin of -32px to
             account for the System Tray. Set this to 0 (or remove the margin altogether)

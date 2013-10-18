@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Navigation;
-using System.Device.Location;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Windows.Input;
 using System.Threading;
 using System.IO;
 using System.Xml;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Navigation;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using System.Windows.Input;
 using System.Windows.Threading;
+using System.Device.Location;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
@@ -23,6 +23,7 @@ using PhoneServices = Microsoft.Phone.Maps.Services;
 using NavAR.MTD;
 using NavAR.MTDService;
 using NavAR.Resources;
+using NavAR.Entities;
 
 using Windows.Devices.Geolocation;
 
@@ -32,10 +33,7 @@ namespace NavAR
     {
         // User location variables
         private GeoCoordinate MyCoordinate = null;
-        private double GpsAccuracy = 0.0;
-
-        // Local transit variables
-        private HashSet<MTDService.Stop> MyBusStops = new HashSet<Stop>();
+        private double GPSAccuracy = 0.0;
 
         // Route variables
         private RouteQuery MyQuery = null;
@@ -43,13 +41,20 @@ namespace NavAR
         private MapRoute MyMapRoute = null;
         //private ReverseGeocodeQuery MyReverseGeocodeQuery = null;
 
+        // MTD/transit variables
+        // TODO: Should have our own classes
+        private HashSet<BusStop> LocalBusStops = new HashSet<BusStop>();
+        private BusStop MyBusStop = null;
+        private HashSet<departure> MTDDepartures= new HashSet<departure>();
+        private HashSet<vehicle> MTDBuses = new HashSet<vehicle>();
+
         // Map graphics
         private MapLayer MarkerMapLayer = new MapLayer();
 
         // Timers
         private DispatcherTimer DrawingTimer = new DispatcherTimer();
         private DispatcherTimer LocationTimer = new DispatcherTimer();
-        private DispatcherTimer MTDScanTimer = new DispatcherTimer();
+        private DispatcherTimer BusStopScanTimer = new DispatcherTimer();
 
         // Constructor
         public MainPage()
@@ -70,22 +75,22 @@ namespace NavAR
         /// <param name="e"></param>
         void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            TimeSpan none = new TimeSpan(0, 0, 0);
+            TimeSpan initialTimeSpan = new TimeSpan(0, 0, 1);
 
             // Set off GPS timer
             LocationTimer.Tick += new EventHandler(LocateUser);
-            LocationTimer.Interval = none;
+            LocationTimer.Interval = initialTimeSpan;
             LocationTimer.Start();
 
             // Set off drawing timer
             DrawingTimer.Tick += new EventHandler(DrawMapMarkers);
-            DrawingTimer.Interval = none;
+            DrawingTimer.Interval = initialTimeSpan;
             DrawingTimer.Start();
 
             // Set off MTD scanning timer
-            MTDScanTimer.Tick += new EventHandler(LocateBusStops);
-            MTDScanTimer.Interval = none;
-            MTDScanTimer.Start();
+            BusStopScanTimer.Tick += new EventHandler(LocateBusStops);
+            BusStopScanTimer.Interval = initialTimeSpan;
+            BusStopScanTimer.Start();
         }
 
         /// <summary>
@@ -100,7 +105,7 @@ namespace NavAR
             {
                 // Send a request for user location asynchronously
                 Geoposition currentPosition = await geolocator.GetGeopositionAsync(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(10));
-                GpsAccuracy = currentPosition.Coordinate.Accuracy;
+                GPSAccuracy = currentPosition.Coordinate.Accuracy;
             
                 // Update variables one the request response comes in
                 // Fire events that were blocked
@@ -125,6 +130,7 @@ namespace NavAR
                 MessageBox.Show("Current location cannot be obtained. Check that location service is turned on in phone settings.");
             }
 
+            // Restart the timer
             LocationTimer.Interval = new TimeSpan(0, 0, 5);
             LocationTimer.Start();
         }
@@ -137,15 +143,12 @@ namespace NavAR
             if (MyCoordinate != null)
             {
                 // Initialize API client and send a request
-                MTDService.WsServiceClient client = new MTDService.WsServiceClient();
+                WsServiceClient client = new WsServiceClient();
                 client.GetStopsByLatLonAsync(MTDAPI.API_KEY, (Decimal)MyCoordinate.Latitude, (Decimal)MyCoordinate.Longitude, 10, String.Empty);
-
+                
                 // Set the complete event handler
                 client.GetStopsByLatLonCompleted += GetStopsByLatLonRequest_Completed;
             }
-
-            MTDScanTimer.Interval = new TimeSpan(0, 0, 10);
-            MTDScanTimer.Start();
         }
 
         /// <summary>
@@ -153,16 +156,72 @@ namespace NavAR
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GetStopsByLatLonRequest_Completed(object sender, MTDService.GetStopsByLatLonCompletedEventArgs e)
+        private void GetStopsByLatLonRequest_Completed(object sender, GetStopsByLatLonCompletedEventArgs e)
         {
-            MTDService.rsp result = e.Result;
+            rsp result = e.Result;
             if (result.stops.Count > 0)
             {
-                MyBusStops = new HashSet<Stop>(result.stops);
+                LocalBusStops.Clear();
+
+                for (int i = 0; i < result.stops.Count; i++)
+                {
+                    Stop stop = result.stops[i];
+                    StopPoint stopPoint = stop.stop_points[0];
+
+                    BusStop busStop = new BusStop
+                    {
+                        Name = stop.stop_name,
+                        Coordinate = new GeoCoordinate((Double)stopPoint.stop_lat, (Double)stopPoint.stop_lon),
+                        MTDId = stop.stop_id
+                    };
+
+                    LocalBusStops.Add(busStop);
+                }
             }
             else
             {
                 MessageBox.Show("Couldn't find any bus stops nearby");
+            }
+
+            // Restart the timer
+            BusStopScanTimer.Interval = new TimeSpan(0, 0, 10);
+            BusStopScanTimer.Start();
+        }
+
+        public void LocateBuses(object sender, EventArgs e)
+        {
+            // Initialize API client and send a request
+            WsServiceClient client = new WsServiceClient();
+            client.GetVehiclesAsync(MTDAPI.API_KEY);
+            client.GetVehiclesCompleted +=
+                (object requestSender, GetVehiclesCompletedEventArgs requestEventArgs) =>
+                {
+                    rsp result = requestEventArgs.Result;
+                    if (result.vehicles.Count > 0)
+                    {
+                        MTDBuses.Clear();
+                        MTDBuses = new HashSet<vehicle>(result.vehicles.ToArray());
+                    }
+                };
+        }
+
+        public void LocateMyBusDepartures(object sender, EventArgs e)
+        {
+            if (MyBusStop != null)
+            {
+                // Initialize API client and send a request
+                WsServiceClient client = new WsServiceClient();
+                client.GetDeparturesByStopAsync(MTDAPI.API_KEY, MyBusStop.MTDId, String.Empty, 60, 5);
+                client.GetDeparturesByStopCompleted +=
+                    (object requestSender, GetDeparturesByStopCompletedEventArgs requestEventArgs) =>
+                    {
+                        rsp result = requestEventArgs.Result;
+                        if (result.departures.Count > 0)
+                        {
+                            MTDDepartures.Clear();
+                            MTDDepartures = new HashSet<departure>(result.departures.ToArray());
+                        }
+                    };
             }
         }
 
@@ -182,11 +241,9 @@ namespace NavAR
             }
 
             // Draw markers for nearby bus stops
-            foreach (MTDService.Stop busStop in MyBusStops)
+            foreach (BusStop busStop in LocalBusStops)
             {
-                MTDService.StopPoint stopPoint = busStop.stop_points.First();
-                GeoCoordinate busStopCoord = new GeoCoordinate((Double)stopPoint.stop_lat, (Double)stopPoint.stop_lon);
-                DrawMapMarker(busStopCoord, Colors.Blue, MarkerMapLayer);
+                DrawMapMarker(busStop.Coordinate, Colors.Blue, MarkerMapLayer);
             }
 
             MyMap.Layers.Add(MarkerMapLayer);
@@ -205,7 +262,7 @@ namespace NavAR
             // The ground resolution (in meters per pixel) varies depending on the level of detail
             // and the latitude at which it’s measured. It can be calculated as follows:
             double metersPerPixels = (Math.Cos(MyCoordinate.Latitude * Math.PI / 180) * 2 * Math.PI * 6378137) / (256 * Math.Pow(2, MyMap.ZoomLevel));
-            double radius = GpsAccuracy / metersPerPixels;
+            double radius = GPSAccuracy / metersPerPixels;
 
             Ellipse ellipse = new Ellipse();
             ellipse.Width = radius * 2;
