@@ -155,6 +155,7 @@
     <Content Include="Icons\appbar.rotate.png" />
     <Content Include="Icons\appbar.video.png" />
     <Content Include="Icons\bus.png" />
+    <Content Include="Icons\appbar.refresh.png" />
     <Content Include="ServiceReferences.ClientConfig" />
   </ItemGroup>
   <ItemGroup>

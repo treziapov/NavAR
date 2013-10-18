@@ -44,6 +44,9 @@ namespace NavAR
     { 
         // Flags/Modes
         private readonly bool DEMO = false;
+        
+        // User Settings
+        public bool Heading = true;
 
         // User location variables
         private GeoCoordinate MyCoordinate = null;
@@ -348,18 +351,29 @@ namespace NavAR
             base.OnNavigatedTo(e);
         }
 
-        private void CameraButton_Click(object sender, System.EventArgs e)
+        private void CameraButton_Click(object sender, EventArgs e)
         {
-            //MyMap.Visibility = MyMap.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
             UIHelper.ToggleVisibility(MyMap);
             UIHelper.ToggleVisibility(VideoPreview);
             UIHelper.ToggleVisibility(WorldView);
         }
 
-        private void CenterButton_Click(object sender, System.EventArgs e)
+        private void CenterButton_Click(object sender, EventArgs e)
         {
-            MyMap.SetView(MyCoordinate, MyMap.ZoomLevel);
+            if (MyCoordinate != null)
+            {
+                MyMap.SetView(MyCoordinate, MyMap.ZoomLevel);
+            }
         }
+
+        private void HeadingButton_Click(object sender, EventArgs e)
+        {
+            if (Heading)
+            {
+                MyMap.Heading = 0;
+            }
+            Heading = !Heading;
+        }   
 
         /// <summary>
         /// Redraws all points of interest on the map
@@ -510,7 +524,13 @@ namespace NavAR
             CompassReading reading = Compass.GetCurrentReading();
             if (reading != null)
             {
-                MyTransform.Rotation = reading.HeadingTrueNorth ?? reading.HeadingMagneticNorth;
+                double angle = reading.HeadingTrueNorth ?? reading.HeadingMagneticNorth;
+                MyTransform.Rotation = angle;
+
+                if (Heading)
+                {
+                    MyMap.Heading = angle;
+                }
             }
         }
 

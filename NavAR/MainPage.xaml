@@ -42,7 +42,8 @@
     
     <phone:PhoneApplicationPage.ApplicationBar>
         <shell:ApplicationBar>
-            <shell:ApplicationBarIconButton x:Name="CenterButton" IconUri="/Icons/appbar.rotate.png" IsEnabled="True" Text="center" Click="CenterButton_Click"/>           
+            <shell:ApplicationBarIconButton x:Name="CenterButton" IconUri="/Icons/appbar.refresh.png" IsEnabled="True" Text="center" Click="CenterButton_Click"/>
+            <shell:ApplicationBarIconButton x:Name="HeadingButton" IconUri="/Icons/appbar.rotate.png" IsEnabled="True" Text="heading" Click="HeadingButton_Click"/>
             <shell:ApplicationBarIconButton x:Name="MapButton" IconUri="/Icons/appbar.video.png" IsEnabled="True" Text="camera" Click="CameraButton_Click"/>
             <!--<shell:ApplicationBarIconButton x:Name="HeadingButton" IconUri="/icons/appbar.heading.png" IsEnabled="True" Text="Heading" Click="HeadingButton_Click"/>-->
             <!--<shell:ApplicationBarIconButton x:Name="ThreeDButton" IconUri="/icons/appbar.3D.png" IsEnabled="True" Text="3D" Click="ThreeDButton_Click"/>
@@ -54,7 +55,7 @@
     </phone:PhoneApplicationPage.ApplicationBar>
 
     
-    <Grid x:Name="LayoutRoot" Background="Transparent">
+    <Grid x:Name="LayoutRoot" Background="Transparent" Margin="0,10,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -101,7 +102,7 @@
                     <GradientStop Color="White" Offset="1"/>
                     <GradientStop Color="White" Offset="0.58"/>
                     <GradientStop Color="White" Offset="0.604"/>
-                    <GradientStop Color="White"  Offset="0.795"/>
+                    <GradientStop Color="White" Offset="0.795"/>
                     <GradientStop Color="White" Offset="0.826"/>
                 </LinearGradientBrush>
             </Path.Fill>
@@ -111,7 +112,12 @@
             <ARControls:VideoPreview x:Name="VideoPreview" Margin="10,-5,0,10" Visibility="Collapsed"/>
             <ARControls:WorldView x:Name="WorldView" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="300.0" NearClippingPlane="1.0" Visibility="Collapsed" />
         </ARControls:ARDisplay>
-        <maps:Map x:Name="MyMap" Margin="10,10,-10,0" Grid.Row="1"/>
+
+        <maps:Map x:Name="MyMap" Margin="0,0,0,21" Grid.Row="1" Height="520" VerticalAlignment="Bottom">
+            <maps:Map.RenderTransform>
+                <CompositeTransform x:Name="MapTransform" Rotation="0" CenterX="240" CenterY="260"/>
+            </maps:Map.RenderTransform>
+        </maps:Map>
 
         <!--Uncomment to see an alignment grid to help ensure your controls are
             aligned on common boundaries.  The image has a top margin of -32px to
