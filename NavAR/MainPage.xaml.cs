@@ -27,6 +27,7 @@ using NavAR.Entities;
 using NavAR.Helpers;
 
 using Windows.Devices.Geolocation;
+using Windows.Devices.Sensors;
 
 namespace NavAR
 {
@@ -59,6 +60,10 @@ namespace NavAR
         private DispatcherTimer LocationTimer = new DispatcherTimer();
         private DispatcherTimer BusStopScanTimer = new DispatcherTimer();
         private DispatcherTimer BusScanTimer = new DispatcherTimer();
+        private DispatcherTimer CompassTimer = new DispatcherTimer();
+
+        // Compass
+        private Compass _compass = Compass.GetDefault();
 
         // Constructor
         public MainPage()
@@ -79,7 +84,7 @@ namespace NavAR
         /// <param name="e"></param>
         void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            TimeSpan initialTimeSpan = new TimeSpan(0, 0, 1);
+            TimeSpan initialTimeSpan = new TimeSpan(0, 0, 0, 0, 100);
 
             // Set off GPS timer
             LocationTimer.Tick += new EventHandler(LocateUser);
@@ -100,6 +105,11 @@ namespace NavAR
             BusScanTimer.Tick += new EventHandler(LocateBuses);
             BusScanTimer.Interval = initialTimeSpan;
             BusScanTimer.Start();
+
+            // Set off Compass
+            CompassTimer.Tick += new EventHandler(DisplayCurrentReading);
+            CompassTimer.Interval = initialTimeSpan;
+            CompassTimer.Start();
         }
 
         /// <summary>
@@ -441,6 +451,18 @@ namespace NavAR
             // Create a new menu item with the localized string from AppResources.
             ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
             ApplicationBar.MenuItems.Add(appBarMenuItem);
+        }
+
+        /// <summary>
+        /// Get Current Compass reading
+        /// </summary>
+        private void DisplayCurrentReading(object sender, object args)
+        {
+            CompassReading reading = _compass.GetCurrentReading();
+            if (reading != null)
+            {
+                MyTransform.Rotation = reading.HeadingMagneticNorth;
+            }
         }
     }
 }
