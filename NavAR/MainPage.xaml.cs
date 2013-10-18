@@ -59,10 +59,7 @@ namespace NavAR
         private DispatcherTimer DrawingTimer = new DispatcherTimer();
         private DispatcherTimer LocationTimer = new DispatcherTimer();
         private DispatcherTimer BusStopScanTimer = new DispatcherTimer();
-<<<<<<< HEAD
         private DispatcherTimer BusScanTimer = new DispatcherTimer();
-=======
->>>>>>> 8b675819a2b18df67eebbc4a79d67c2ed56fbb32
         private DispatcherTimer CompassTimer = new DispatcherTimer();
 
         // Compass
@@ -104,14 +101,11 @@ namespace NavAR
             BusStopScanTimer.Interval = initialTimeSpan;
             BusStopScanTimer.Start();
 
-<<<<<<< HEAD
             // Set off MTD bus scanning timer
             BusScanTimer.Tick += new EventHandler(LocateBuses);
             BusScanTimer.Interval = initialTimeSpan;
             BusScanTimer.Start();
 
-=======
->>>>>>> 8b675819a2b18df67eebbc4a79d67c2ed56fbb32
             // Set off Compass
             CompassTimer.Tick += new EventHandler(DisplayCurrentReading);
             CompassTimer.Interval = initialTimeSpan;
