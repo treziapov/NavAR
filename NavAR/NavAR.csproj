@@ -93,7 +93,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Entities\Bus.cs" />
     <Compile Include="Entities\BusStop.cs" />
+    <Compile Include="Helpers\CoordinateMath.cs" />
     <Compile Include="MTD\MTDMethod.cs" />
     <Compile Include="MTD\MTDAPI.cs" />
     <Compile Include="LocalizedStrings.cs" />
