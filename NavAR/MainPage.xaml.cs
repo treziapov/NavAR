@@ -48,7 +48,7 @@ namespace NavAR
         private HashSet<BusStop> LocalBusStops = new HashSet<BusStop>();
         private BusStop MyBusStop = null;
         private HashSet<departure> MTDDepartures= new HashSet<departure>();
-        private HashSet<Bus> MTDBuses = new HashSet<Bus>();
+        private HashSet<Bus> LocalBuses = new HashSet<Bus>();
 
         private double ScanRadiusInMetres = 1000d;
 
@@ -61,9 +61,22 @@ namespace NavAR
         private DispatcherTimer BusStopScanTimer = new DispatcherTimer();
         private DispatcherTimer BusScanTimer = new DispatcherTimer();
         private DispatcherTimer CompassTimer = new DispatcherTimer();
+        private DispatcherTimer DemoTimer = new DispatcherTimer();
 
         // Compass
-        private Compass _compass = Compass.GetDefault();
+        private Compass Compass = Compass.GetDefault();
+
+        // Test 
+        private readonly bool DEMO = true;
+        private List<GeoCoordinate> DemoVisitCoordinates = null;
+        private List<GeoCoordinate> DemoWalkCoordinates = new List<GeoCoordinate>()
+        {
+            new GeoCoordinate(40.11384d, -88.22489d),   //  Siebel Center, Urbana
+            new GeoCoordinate(40.10979d, -88.22726d),   //  Illini Union, Urbana
+            new GeoCoordinate(40.10484d, -88.22874d),   //  Main Library, Urbana
+            new GeoCoordinate(40.10149d, -88.23605d),   //  ARC, Champaign
+            new GeoCoordinate(40.09076d, -88.21130d)    //  Orchard Downs, Champaign
+        };
 
         // Constructor
         public MainPage()
@@ -84,13 +97,19 @@ namespace NavAR
         /// <param name="e"></param>
         void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            TimeSpan initialTimeSpan = new TimeSpan(0, 0, 0, 0, 100);
+            TimeSpan initialTimeSpan = new TimeSpan(0, 0, 1);
 
             // Set off GPS timer
-            LocationTimer.Tick += new EventHandler(LocateUser);
-            LocationTimer.Interval = initialTimeSpan;
-            LocationTimer.Start();
-
+            if (DEMO)
+            {
+                StartDemoWalk();
+            }
+            else
+            {
+                LocationTimer.Tick += new EventHandler(LocateUser);
+                LocationTimer.Interval = initialTimeSpan;
+                LocationTimer.Start();
+            }
             // Set off drawing timer
             DrawingTimer.Tick += new EventHandler(DrawMapMarkers);
             DrawingTimer.Interval = initialTimeSpan;
@@ -108,8 +127,51 @@ namespace NavAR
 
             // Set off Compass
             CompassTimer.Tick += new EventHandler(DisplayCurrentReading);
-            CompassTimer.Interval = initialTimeSpan;
+            CompassTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             CompassTimer.Start();
+        }
+        
+        /// <summary>
+        /// Demo Walk simulation
+        /// </summary>
+        public void StartDemoWalk()
+        {
+            MyCoordinate = DemoWalkCoordinates.First();
+            MyMap.SetView(MyCoordinate, 13d);
+            MyQuery = new RouteQuery();
+
+            MyQuery.Waypoints = DemoWalkCoordinates;
+            MyQuery.QueryCompleted += (object querySender, QueryCompletedEventArgs<PhoneServices.Route> queryEventArgs) =>
+            {
+                if (queryEventArgs.Error == null)
+                {
+                    // Update and draw the new map route
+                    MyMapRoute = new MapRoute(queryEventArgs.Result);
+                    DemoVisitCoordinates = MyMapRoute.Route.Geometry.ToList();
+                    MyMap.AddRoute(MyMapRoute);
+                    MyQuery.Dispose();
+                }
+
+                DemoTimer.Tick += new EventHandler(DemoWalk);
+                DemoTimer.Interval = new TimeSpan(0, 0, 2);
+                DemoTimer.Start();
+            };
+            MyQuery.QueryAsync();
+        }
+
+        private void DemoWalk(object sender, EventArgs e)
+        {
+            if (DemoVisitCoordinates.Count < 1)
+            {
+                DemoTimer.Stop();
+                MessageBox.Show("Demo Walk ended");
+                return;
+            }
+
+            MyCoordinate = DemoVisitCoordinates.ElementAt(0);
+            DemoVisitCoordinates.RemoveAt(0);
+            
+            MyMap.SetView(MyCoordinate, MyMap.ZoomLevel);
         }
 
         /// <summary>
@@ -117,6 +179,8 @@ namespace NavAR
         /// </summary>
         private async void LocateUser(object sender, EventArgs e)
         {
+            LocationTimer.Stop();
+
             Geolocator geolocator = new Geolocator();
             geolocator.DesiredAccuracy = PositionAccuracy.High;
 
@@ -143,8 +207,8 @@ namespace NavAR
                         //MyMap.SetView(MyCoordinate, MyMap.ZoomLevel);
                     }
 
-                    // Change the timer interval
                     LocationTimer.Interval = new TimeSpan(0, 0, 5);
+                    LocationTimer.Start();
                 });
             }
             catch
@@ -158,52 +222,47 @@ namespace NavAR
         /// </summary>
         public void LocateBusStops(object sender, EventArgs e)
         {
-            if (MyCoordinate != null)
-            {
-                // Initialize API client and send a request
-                WsServiceClient client = new WsServiceClient();
-                client.GetStopsByLatLonAsync(MTDAPI.API_KEY, (Decimal)MyCoordinate.Latitude, (Decimal)MyCoordinate.Longitude, 10, String.Empty);
+            if (MyCoordinate == null) return;
 
-                // Set the complete event handler
-                client.GetStopsByLatLonCompleted += GetStopsByLatLonRequest_Completed;
-            }
-        }
+            BusStopScanTimer.Stop();
 
-        /// <summary>
-        /// Process and store nearby bus stop information
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void GetStopsByLatLonRequest_Completed(object sender, GetStopsByLatLonCompletedEventArgs e)
-        {
-            rsp result = e.Result;
-            if (result.stops.Count > 0)
-            {
-                LocalBusStops.Clear();
+            // Initialize API client and send a request
+            WsServiceClient client = new WsServiceClient();
+            client.GetStopsByLatLonAsync(MTDAPI.API_KEY, (Decimal)MyCoordinate.Latitude, (Decimal)MyCoordinate.Longitude, 10, String.Empty);
 
-                for (int i = 0; i < result.stops.Count; i++)
+            // Set the complete event handler
+            client.GetStopsByLatLonCompleted += 
+                (object requestSender, GetStopsByLatLonCompletedEventArgs requestEventArgs) =>
                 {
-                    Stop stop = result.stops[i];
-                    StopPoint stopPoint = stop.stop_points[0];
-
-                    BusStop busStop = new BusStop
+                    rsp result = requestEventArgs.Result;
+                    if (result.stops.Count > 0)
                     {
-                        Name = stop.stop_name,
-                        Coordinate = new GeoCoordinate((Double)stopPoint.stop_lat, (Double)stopPoint.stop_lon),
-                        MTDId = stop.stop_id
-                    };
+                        LocalBusStops.Clear();
 
-                    LocalBusStops.Add(busStop);
-                }
-            }
-            else
-            {
-                MessageBox.Show("Couldn't find any bus stops nearby");
-            }
+                        for (int i = 0; i < result.stops.Count; i++)
+                        {
+                            Stop stop = result.stops[i];
+                            StopPoint stopPoint = stop.stop_points[0];
 
-            // Restart the timer
-            BusStopScanTimer.Interval = new TimeSpan(0, 0, 10);
-            BusStopScanTimer.Start();
+                            BusStop busStop = new BusStop
+                            {
+                                Name = stop.stop_name,
+                                Coordinate = new GeoCoordinate((Double)stopPoint.stop_lat, (Double)stopPoint.stop_lon),
+                                MTDId = stop.stop_id
+                            };
+
+                            LocalBusStops.Add(busStop);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Couldn't find any bus stops nearby");
+                    }
+
+                    // Restart the timer
+                    BusStopScanTimer.Interval = new TimeSpan(0, 0, 2);     // 10 seconds
+                    BusStopScanTimer.Start();
+                };
         }
 
         /// <summary>
@@ -213,42 +272,34 @@ namespace NavAR
         /// <param name="e"></param>
         public void LocateBuses(object sender, EventArgs e)
         {
-            if (MyCoordinate == null)
-            {
-                return;
-            }
+            if (MyCoordinate == null) return;
+
+            BusScanTimer.Interval = new TimeSpan(0, 0, 10);      
 
             // Initialize API client and send a request
             WsServiceClient client = new WsServiceClient();
             client.GetVehiclesAsync(MTDAPI.API_KEY);
-            client.GetVehiclesCompleted +=
+            client.GetVehiclesCompleted += 
                 (object requestSender, GetVehiclesCompletedEventArgs requestEventArgs) =>
                 {
                     rsp result = requestEventArgs.Result;
                     if (result.vehicles.Count > 0)
                     {
-                        MTDBuses.Clear(); 
-                        MTDBuses = new HashSet<Bus>();
+                        LocalBuses.Clear(); 
+                        LocalBuses = new HashSet<Bus>();
 
                         foreach (vehicle MTDbus in result.vehicles)
                         {
                             GeoCoordinate busCoordinate = new GeoCoordinate((Double)MTDbus.location.lat, (Double)MTDbus.location.lon);
-                            double distanceToBus = CoordinateMath.DistanceBetween(MyCoordinate, busCoordinate);
-                            if (distanceToBus < ScanRadiusInMetres)
+                            Bus bus = new Bus
                             {
-                                Bus bus = new Bus
-                                {
-                                    Coordinate = busCoordinate,
-                                    MTDId = MTDbus.vehicle_id
-                                };
-                                MTDBuses.Add(bus);
-                            }
+                                Coordinate = busCoordinate,
+                                MTDId = MTDbus.vehicle_id
+                            };
+                            LocalBuses.Add(bus);
                         }
                     }
                 };
-
-            BusScanTimer.Interval = new TimeSpan(0, 1, 0);      // every minute
-            BusScanTimer.Start();
         }
 
         public void LocateMyBusDepartures(object sender, EventArgs e)
@@ -293,15 +344,19 @@ namespace NavAR
             }
 
             // Drawmarkers for nearby buses
-            foreach (Bus bus in MTDBuses)
+            foreach (Bus bus in LocalBuses)
             {
-                DrawMapMarker(bus.Coordinate, Colors.Green, MarkerMapLayer);
+                double distanceTo = CoordinateMath.DistanceBetween(MyCoordinate, bus.Coordinate);
+                if (distanceTo <= ScanRadiusInMetres)
+                {
+                    DrawMapMarker(bus.Coordinate, Colors.Green, MarkerMapLayer);
+                }
             }
 
             MyMap.Layers.Add(MarkerMapLayer);
 
             // Restart the timer
-            DrawingTimer.Interval = new TimeSpan(0, 0, 5);
+            DrawingTimer.Interval = new TimeSpan(0, 0, 1);
             DrawingTimer.Start();
         }
 
@@ -377,8 +432,35 @@ namespace NavAR
             // Add destination coordinate
             MyCoordinates.Add(geoCoordinate);
             MyQuery.Waypoints = MyCoordinates;
-            MyQuery.QueryCompleted += MyQuery_QueryCompleted;
+            MyQuery.QueryCompleted += (object querySender, QueryCompletedEventArgs<PhoneServices.Route> queryEventArgs) =>
+                {
+                    if (queryEventArgs.Error == null)
+                    {
+                        // Remove an existing route
+                        if (MyMapRoute != null)
+                        {
+                            MyMap.RemoveRoute(MyMapRoute);
+                        }
+
+                        // Update and draw the new map route
+                        MyMapRoute = new MapRoute(queryEventArgs.Result);
+                        MyMap.AddRoute(MyMapRoute);
+                        MyQuery.Dispose();
+                    }
+                };
             MyQuery.QueryAsync(); 
+        }
+
+        /// <summary>
+        /// Get Current Compass reading
+        /// </summary>
+        private void DisplayCurrentReading(object sender, object args)
+        {
+            CompassReading reading = Compass.GetCurrentReading();
+            if (reading != null)
+            {
+                MyTransform.Rotation = reading.HeadingTrueNorth ?? reading.HeadingMagneticNorth;
+            }
         }
 
         /// <summary>
@@ -407,31 +489,9 @@ namespace NavAR
                 // Add destination coordinate
                 MyCoordinates.Add(e.Result[0].GeoCoordinate);
                 MyQuery.Waypoints = MyCoordinates;
-                MyQuery.QueryCompleted += MyQuery_QueryCompleted;
-                MyQuery.QueryAsync();
+                //MyQuery.QueryCompleted += MyQuery_QueryCompleted;
+                //MyQuery.QueryAsync();
                 //MyReverseGeocodeQuery.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Processes the route result and displays it on map, clearing the old route
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MyQuery_QueryCompleted(object sender, QueryCompletedEventArgs<PhoneServices.Route> e)
-        {
-            if (e.Error == null)
-            {
-                // Remove an existing route
-                if (MyMapRoute != null)
-                {
-                    MyMap.RemoveRoute(MyMapRoute);
-                }
-
-                // Update and draw the new map route
-                MyMapRoute = new MapRoute(e.Result);
-                MyMap.AddRoute(MyMapRoute);
-                MyQuery.Dispose();
             }
         }
 
@@ -451,18 +511,6 @@ namespace NavAR
             // Create a new menu item with the localized string from AppResources.
             ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
             ApplicationBar.MenuItems.Add(appBarMenuItem);
-        }
-
-        /// <summary>
-        /// Get Current Compass reading
-        /// </summary>
-        private void DisplayCurrentReading(object sender, object args)
-        {
-            CompassReading reading = _compass.GetCurrentReading();
-            if (reading != null)
-            {
-                MyTransform.Rotation = reading.HeadingMagneticNorth;
-            }
         }
     }
 }

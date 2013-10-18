@@ -40,17 +40,20 @@
          -->
 
         <!--TitlePanel contains the name of the application and page title-->
-        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
+        <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,206,28">
             <TextBlock Text="NavAR" Style="{StaticResource PhoneTextNormalStyle}" Margin="12,0"/>
-            <TextBlock Text="Main Page" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock Margin="9,-7,110,0" Style="{StaticResource PhoneTextTitle1Style}" Height="60">
+            	<Run FontSize="40" Text="Map"/>
+            </TextBlock>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="10,10,14,-10"/>
+        <!--<Grid x:Name="ContentPanel" Grid.Row="1" Margin="10,10,14,-10"/>-->
 
         <maps:Map Name="MyMap" Margin="0,10,0,100" Grid.Row="1"/>
 
-        <Path Data="M87.026947,24.16836 L102.66625,48.669857 L94.666451,48.669857 L94.666451,84.674995 L78.666855,84.674995 L78.666855,48.669857 L70.667053,48.669857 z" HorizontalAlignment="Right" Height="18.269" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="9.664" RenderTransformOrigin="0.5,1" Margin="0,0,32.668,431.502" Grid.Row="1">
+        <Path Data="M87.026947,24.16836 L102.66625,48.669857 L94.666451,48.669857 L94.666451,84.674995 L78.666855,84.674995 L78.666855,48.669857 L70.667053,48.669857 z" 
+              HorizontalAlignment="Right" Height="18.269" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="9.664" RenderTransformOrigin="0.5,1" Margin="0,0,55.336,538" Grid.Row="1">
             <Path.RenderTransform>
                 <CompositeTransform x:Name="MyTransform" Rotation="0" ScaleX="2.91" TranslateX="-16" TranslateY="-61" ScaleY="3.4"/>
             </Path.RenderTransform>
@@ -58,10 +61,10 @@
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="White" Offset="0"/>
                     <GradientStop Color="White" Offset="1"/>
-                    <GradientStop Color="#FEFEFEFE" Offset="0.58"/>
-                    <GradientStop Color="#FEE22828" Offset="0.604"/>
-                    <GradientStop Color="#FEE64C4C" Offset="0.795"/>
-                    <GradientStop Color="#FEFFFFFF" Offset="0.826"/>
+                    <GradientStop Color="White" Offset="0.58"/>
+                    <GradientStop Color="White" Offset="0.604"/>
+                    <GradientStop Color="White"  Offset="0.795"/>
+                    <GradientStop Color="White" Offset="0.826"/>
                 </LinearGradientBrush>
             </Path.Fill>
         </Path>
