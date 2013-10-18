@@ -6,14 +6,54 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+    xmlns:ARControls="clr-namespace:GART.Controls;assembly=GART.WP8"
     x:Class="NavAR.MainPage"
-    mc:Ignorable="d"
+    mc:Ignorable="d" 
+    d:DesignWidth="480" 
+    d:DesignHeight="728"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="Portrait" Orientation="Portrait"
+    SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
     shell:SystemTray.IsVisible="True">
 
+    <phone:PhoneApplicationPage.Resources>
+        <DataTemplate x:Key="BusStop">
+            <Border BorderBrush="Black" BorderThickness="4" CornerRadius="8" Background="#FF003847" Width="320">
+                <Grid Margin="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="0.5*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.33*"/>
+                        <RowDefinition Height="0.33*"/>
+                        <RowDefinition Height="16"/>
+                    </Grid.RowDefinitions>
+                    <Image Grid.RowSpan="3" Source="/Icons/bus.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock x:Name="NameBlock" TextWrapping="NoWrap" Text="{Binding Name}" FontSize="32" VerticalAlignment="Center" Margin="0,0,4,0" d:LayoutOverrides="Width" Grid.Column="1" TextTrimming="WordEllipsis"/>
+                    <TextBlock x:Name="TypeBlock" TextWrapping="NoWrap" Text="{Binding MTDId}" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Grid.Column="1" d:LayoutOverrides="Width" Grid.Row="1" TextTrimming="WordEllipsis"/>
+                    <!-- Could use this to gauge distance later -->
+                    <ProgressBar x:Name="RatingBar" Grid.Row="2" Grid.Column="1" Maximum="10" Value="8" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </phone:PhoneApplicationPage.Resources>
+    
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar>
+            <shell:ApplicationBarIconButton x:Name="CenterButton" IconUri="/Icons/appbar.rotate.png" IsEnabled="True" Text="center" Click="CenterButton_Click"/>           
+            <shell:ApplicationBarIconButton x:Name="MapButton" IconUri="/Icons/appbar.video.png" IsEnabled="True" Text="camera" Click="CameraButton_Click"/>
+            <!--<shell:ApplicationBarIconButton x:Name="HeadingButton" IconUri="/icons/appbar.heading.png" IsEnabled="True" Text="Heading" Click="HeadingButton_Click"/>-->
+            <!--<shell:ApplicationBarIconButton x:Name="ThreeDButton" IconUri="/icons/appbar.3D.png" IsEnabled="True" Text="3D" Click="ThreeDButton_Click"/>
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem x:Name="AddLocationsMenu" Text="add locations" Click="AddLocationsMenu_Click" />
+                <shell:ApplicationBarMenuItem x:Name="ClearLocationsMenu" Text="clear locations" Click="ClearLocationsMenu_Click" />
+            </shell:ApplicationBar.MenuItems>-->
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
+
+    
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -48,9 +88,7 @@
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <!--<Grid x:Name="ContentPanel" Grid.Row="1" Margin="10,10,14,-10"/>-->
-
-        <maps:Map Name="MyMap" Margin="0,10,0,100" Grid.Row="1"/>
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="10,10,14,-10"/>
 
         <Path Data="M87.026947,24.16836 L102.66625,48.669857 L94.666451,48.669857 L94.666451,84.674995 L78.666855,84.674995 L78.666855,48.669857 L70.667053,48.669857 z" 
               HorizontalAlignment="Right" Height="18.269" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="9.664" RenderTransformOrigin="0.5,1" Margin="0,0,55.336,538" Grid.Row="1">
@@ -68,6 +106,12 @@
                 </LinearGradientBrush>
             </Path.Fill>
         </Path>
+
+        <ARControls:ARDisplay x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10" Margin="12,20,8,0" Grid.Row="1" >
+            <ARControls:VideoPreview x:Name="VideoPreview" Margin="10,-5,0,10" Visibility="Collapsed"/>
+            <ARControls:WorldView x:Name="WorldView" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="300.0" NearClippingPlane="1.0" Visibility="Collapsed" />
+        </ARControls:ARDisplay>
+        <maps:Map x:Name="MyMap" Margin="10,10,-10,0" Grid.Row="1"/>
 
         <!--Uncomment to see an alignment grid to help ensure your controls are
             aligned on common boundaries.  The image has a top margin of -32px to

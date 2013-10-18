@@ -5,25 +5,66 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Device.Location;
 
+using GART.Data;
+
 namespace NavAR.Entities
 {
     /// <summary>
     /// 
     /// </summary>
-    class BusStop
+    class BusStop : ARItem
     {
-        public String MTDId { get; set; }
-        public String Name { get; set; }
-        public GeoCoordinate Coordinate { get; set; }
+        private string _name;
+        private string _mtdid;
+
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                if (_name != value)
+                {
+                    _name = value;
+                    NotifyPropertyChanged(() => Name);
+
+                    // Update the Content property as well for controls that
+                    // only show this memeber
+                    Content = value;
+                }
+            }
+        }
+
+        public string MTDId
+        {
+            get
+            {
+                return _mtdid;
+            }
+            set
+            {
+                if (_mtdid != value)
+                {
+                    _mtdid = value;
+                    NotifyPropertyChanged(() => MTDId);
+
+                    // Update the Content property as well for controls that
+                    // only show this memeber
+                    Content = value;
+                }
+            }
+        }
 
         public override int GetHashCode()
         {
-            return Coordinate.GetHashCode();
+            return base.GeoLocation.GetHashCode();
         }
 
         public override bool Equals(object obj)
         {
-            return Coordinate.Equals(obj as GeoCoordinate);
+            return base.GeoLocation.Equals(obj as GeoCoordinate);
         }
 
     }

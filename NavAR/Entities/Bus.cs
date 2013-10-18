@@ -5,9 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GART.Data;
+
 namespace NavAR.Entities
 {
-    class Bus
+    /// <summary>
+    /// 
+    /// </summary>
+    class Bus : ARItem
     {
         public GeoCoordinate Coordinate { get; set; }
         public String MTDId { get; set; }

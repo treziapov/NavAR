@@ -13,11 +13,15 @@ using System.Windows.Shapes;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Device.Location;
+using Media = System.Windows.Media;
+using WinPoint = System.Windows.Point;
+using WinColor = System.Windows.Media.Color;
 
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Maps.Services;
+using Microsoft.Xna.Framework;
 using PhoneServices = Microsoft.Phone.Maps.Services;
 
 using NavAR.MTD;
@@ -29,10 +33,18 @@ using NavAR.Helpers;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Sensors;
 
+using GART;
+using GART.BaseControls;
+using GART.Data;
+using GART.Controls;
+
 namespace NavAR
 {
     public partial class MainPage : PhoneApplicationPage
-    {
+    { 
+        // Flags/Modes
+        private readonly bool DEMO = false;
+
         // User location variables
         private GeoCoordinate MyCoordinate = null;
         private double GPSAccuracy = 0.0;
@@ -44,13 +56,12 @@ namespace NavAR
         //private ReverseGeocodeQuery MyReverseGeocodeQuery = null;
 
         // MTD/transit variables
-        // TODO: Should have our own classes
+        private HashSet<Bus> LocalBuses = new HashSet<Bus>();
         private HashSet<BusStop> LocalBusStops = new HashSet<BusStop>();
         private BusStop MyBusStop = null;
         private HashSet<departure> MTDDepartures= new HashSet<departure>();
-        private HashSet<Bus> LocalBuses = new HashSet<Bus>();
 
-        private double ScanRadiusInMetres = 1000d;
+        private double ScanRadiusInMetres = 500d;
 
         // Map graphics
         private MapLayer MarkerMapLayer = new MapLayer();
@@ -66,8 +77,7 @@ namespace NavAR
         // Compass
         private Compass Compass = Compass.GetDefault();
 
-        // Test 
-        private readonly bool DEMO = true;
+        // Test/Demo
         private List<GeoCoordinate> DemoVisitCoordinates = null;
         private List<GeoCoordinate> DemoWalkCoordinates = new List<GeoCoordinate>()
         {
@@ -84,7 +94,7 @@ namespace NavAR
             InitializeComponent();
 
             // Sample code to localize the ApplicationBar
-            BuildLocalizedApplicationBar();
+            //BuildLocalizedApplicationBar();
 
             // Fire off logic once the page loads
             Loaded += MainPage_Loaded;
@@ -247,7 +257,7 @@ namespace NavAR
                             BusStop busStop = new BusStop
                             {
                                 Name = stop.stop_name,
-                                Coordinate = new GeoCoordinate((Double)stopPoint.stop_lat, (Double)stopPoint.stop_lon),
+                                GeoLocation = new GeoCoordinate((Double)stopPoint.stop_lat, (Double)stopPoint.stop_lon),
                                 MTDId = stop.stop_id
                             };
 
@@ -322,25 +332,59 @@ namespace NavAR
             }
         }
 
+        protected override void OnNavigatedFrom(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            // Stop AR services
+            ARDisplay.StopServices();
+
+            base.OnNavigatedFrom(e);
+        }
+
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
+        {
+            // Start AR services
+            ARDisplay.StartServices();
+
+            base.OnNavigatedTo(e);
+        }
+
+        private void CameraButton_Click(object sender, System.EventArgs e)
+        {
+            //MyMap.Visibility = MyMap.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            UIHelper.ToggleVisibility(MyMap);
+            UIHelper.ToggleVisibility(VideoPreview);
+            UIHelper.ToggleVisibility(WorldView);
+        }
+
+        private void CenterButton_Click(object sender, System.EventArgs e)
+        {
+            MyMap.SetView(MyCoordinate, MyMap.ZoomLevel);
+        }
+
         /// <summary>
         /// Redraws all points of interest on the map
         /// </summary>
         private void DrawMapMarkers(object sender, EventArgs e)
         {
             MyMap.Layers.Clear();
+            ARDisplay.ARItems.Clear();
+
             MarkerMapLayer = new MapLayer();
          
             // Draw marker for current position
             if (MyCoordinate != null)
             {
                 DrawAccuracyRadius(MarkerMapLayer);
-                DrawMapMarker(MyCoordinate, Colors.Red, MarkerMapLayer);
+                DrawMapMarker(MyCoordinate, Media.Colors.Red, MarkerMapLayer);
             }
 
             // Draw markers for nearby bus stops
             foreach (BusStop busStop in LocalBusStops)
             {
-                DrawMapMarker(busStop.Coordinate, Colors.Blue, MarkerMapLayer);
+                DrawMapMarker(busStop.GeoLocation, Media.Colors.Blue, MarkerMapLayer);
+
+                ARDisplay.ARItems.Add(busStop);
+                //ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name});
             }
 
             // Drawmarkers for nearby buses
@@ -349,7 +393,14 @@ namespace NavAR
                 double distanceTo = CoordinateMath.DistanceBetween(MyCoordinate, bus.Coordinate);
                 if (distanceTo <= ScanRadiusInMetres)
                 {
-                    DrawMapMarker(bus.Coordinate, Colors.Green, MarkerMapLayer);
+                    DrawMapMarker(bus.Coordinate, Media.Colors.Green, MarkerMapLayer);
+                    ARItem item = new ARItem()
+                    {
+                        Content = bus.MTDId,
+                        GeoLocation = bus.Coordinate
+                    };
+
+                    ARDisplay.ARItems.Add(item);
                 }
             }
 
@@ -374,12 +425,12 @@ namespace NavAR
             Ellipse ellipse = new Ellipse();
             ellipse.Width = radius * 2;
             ellipse.Height = radius * 2;
-            ellipse.Fill = new SolidColorBrush(Color.FromArgb(75, 200, 0, 0));
+            ellipse.Fill = new SolidColorBrush(Media.Color.FromArgb(75, 200, 0, 0));
 
             MapOverlay overlay = new MapOverlay();
             overlay.Content = ellipse;
             overlay.GeoCoordinate = new GeoCoordinate(MyCoordinate.Latitude, MyCoordinate.Longitude);
-            overlay.PositionOrigin = new Point(0.5, 0.5);
+            overlay.PositionOrigin = new WinPoint(0.5, 0.5);
             mapLayer.Add(overlay);
         }
 
@@ -389,13 +440,13 @@ namespace NavAR
         /// <param name="coordinate"></param>
         /// <param name="color"></param>
         /// <param name="mapLayer"></param>
-        private void DrawMapMarker(GeoCoordinate coordinate, Color color, MapLayer mapLayer)
+        private void DrawMapMarker(GeoCoordinate coordinate, WinColor color, MapLayer mapLayer)
         {
             // Create a map marker
             Polygon polygon = new Polygon();
-            polygon.Points.Add(new Point(0, 0));
-            polygon.Points.Add(new Point(0, 75));
-            polygon.Points.Add(new Point(25, 0));
+            polygon.Points.Add(new WinPoint(0, 0));
+            polygon.Points.Add(new WinPoint(0, 75));
+            polygon.Points.Add(new WinPoint(25, 0));
             polygon.Fill = new SolidColorBrush(color);
             
             // Enable marker to be tapped for location information
@@ -406,7 +457,7 @@ namespace NavAR
             MapOverlay overlay = new MapOverlay();
             overlay.Content = polygon;
             overlay.GeoCoordinate = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
-            overlay.PositionOrigin = new Point(0.0, 1.0);
+            overlay.PositionOrigin = new WinPoint(0.0, 1.0);
             mapLayer.Add(overlay);
         }
         
@@ -498,19 +549,19 @@ namespace NavAR
         /// <summary>
         /// Sample code for building a localized ApplicationBar
         /// </summary>
-        private void BuildLocalizedApplicationBar()
-        {
-            // Set the page's ApplicationBar to a new instance of ApplicationBar.
-            ApplicationBar = new ApplicationBar();
+        //private void BuildLocalizedApplicationBar()
+        //{
+        //    // Set the page's ApplicationBar to a new instance of ApplicationBar.
+        //    ApplicationBar = new ApplicationBar();
 
-            // Create a new button and set the text value to the localized string from AppResources.
-            ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
-            appBarButton.Text = AppResources.AppBarButtonText;
-            ApplicationBar.Buttons.Add(appBarButton);
+        //    // Create a new button and set the text value to the localized string from AppResources.
+        //    ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
+        //    appBarButton.Text = AppResources.AppBarButtonText;
+        //    ApplicationBar.Buttons.Add(appBarButton);
 
-            // Create a new menu item with the localized string from AppResources.
-            ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
-            ApplicationBar.MenuItems.Add(appBarMenuItem);
-        }
+        //    // Create a new menu item with the localized string from AppResources.
+        //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
+        //    ApplicationBar.MenuItems.Add(appBarMenuItem);
+        //}
     }
 }
