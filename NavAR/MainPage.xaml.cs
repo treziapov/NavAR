@@ -35,6 +35,7 @@ using NavAR.Helpers;
 
 using Windows.Devices.Geolocation;
 using Windows.Devices.Sensors;
+using Windows.Phone.Devices.Notification;
 
 using GART;
 using GART.BaseControls;
@@ -83,9 +84,15 @@ namespace NavAR
         private DispatcherTimer BusScanTimer = new DispatcherTimer();
         private DispatcherTimer CompassTimer = new DispatcherTimer();
         private DispatcherTimer DemoTimer = new DispatcherTimer();
+        private DispatcherTimer RealTimeBusStopScanner = new DispatcherTimer();
 
         // Compass
         private Compass Compass = Compass.GetDefault();
+
+        //Vibration Variables
+        private VibrationDevice notifyUserWithVibration = VibrationDevice.GetDefault();
+        private String prevBusStop = "NONE";
+        //private HashSet<BusStop> BusStopsInRealTime = new HashSet<BusStop>();
 
         // Test/Demo
         private List<GeoCoordinate> DemoVisitCoordinates = null;
@@ -149,6 +156,11 @@ namespace NavAR
             CompassTimer.Tick += new EventHandler(DisplayCurrentReading);
             CompassTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             CompassTimer.Start();
+
+            // Set off RealTimeScanner
+            RealTimeBusStopScanner.Tick += new EventHandler(LocateBusStopsInRealTime);
+            RealTimeBusStopScanner.Interval = initialTimeSpan;
+            RealTimeBusStopScanner.Start();
 
             // Start updating the live tile
             StartPeriodicAgent();
@@ -645,6 +657,54 @@ namespace NavAR
                 //MyQuery.QueryAsync();
                 //MyReverseGeocodeQuery.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Use MTD API to locate a specific number of bus stops closest to you in real time
+        /// </summary>
+        public void LocateBusStopsInRealTime(object sender, EventArgs e)
+        {
+            if (MyCoordinate == null) return;
+
+            RealTimeBusStopScanner.Stop();
+
+            // Initialize API client and send a request
+            WsServiceClient client = new WsServiceClient();
+            client.GetStopsByLatLonAsync(MTDAPI.API_KEY, (Decimal)MyCoordinate.Latitude, (Decimal)MyCoordinate.Longitude, 10, String.Empty);
+
+            // Set the complete event handler
+            client.GetStopsByLatLonCompleted +=
+                (object requestSender, GetStopsByLatLonCompletedEventArgs requestEventArgs) =>
+                {
+                    rsp result = requestEventArgs.Result;
+                    if (result.stops.Count > 0)
+                    {
+
+                        for (int i = 0; i < result.stops.Count; i++)
+                        {
+                            Stop stop = result.stops[i];
+                            StopPoint stopPoint = stop.stop_points[0];
+                            System.Diagnostics.Debug.WriteLine(stop.distance);
+
+                            //if distance between my location and stop is less than 300 feet, vibrate
+                            if (stop.distance < 300 && prevBusStop != stop.stop_id)
+                            {
+                                notifyUserWithVibration.Vibrate(TimeSpan.FromSeconds(3));
+                                prevBusStop = stop.stop_id;
+                                MessageBox.Show("You are close to" + stop.stop_name);
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Couldn't find any bus stops nearby");
+                    }
+
+                    // Restart the timer
+                    RealTimeBusStopScanner.Interval = new TimeSpan(0, 0, 10);     // 10 seconds
+                    RealTimeBusStopScanner.Start();
+                };
         }
 
         /// <summary>
