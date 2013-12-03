@@ -59,12 +59,20 @@ namespace NavAR.Entities
 
         public override int GetHashCode()
         {
-            return base.GeoLocation.GetHashCode();
+            return this.MTDId.GetHashCode();
         }
 
         public override bool Equals(object obj)
         {
-            return base.GeoLocation.Equals(obj as GeoCoordinate);
+            BusStop busStopObj = obj as BusStop;
+            if (busStopObj == null)
+            {
+                return false;
+            }
+            else
+            {
+                return this.MTDId == busStopObj.MTDId;
+            }
         }
 
     }

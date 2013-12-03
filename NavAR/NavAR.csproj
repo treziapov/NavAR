@@ -102,6 +102,7 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\AppResources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -151,6 +152,7 @@
     <None Include="Service References\MTDService\Service5.xsd">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="Assets\Tiles\FlipTileLargeBack.png" />
     <Content Include="Icons\appbar.map.png" />
     <Content Include="Icons\appbar.rotate.png" />
     <Content Include="Icons\appbar.video.png" />
@@ -207,7 +209,12 @@
       <HintPath>..\..\..\..\My Libraries\VisualStudio\GART_1_2_0\Lib\WP8\x86\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\LiveTileScheduledTaskAgent\LiveTileScheduledTaskAgent.csproj">
+      <Project>{D6DC7AA8-B4A2-4EDB-B8FF-C1DDF228F6E7}</Project>
+      <Name>LiveTileScheduledTaskAgent</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

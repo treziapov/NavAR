@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define DEBUG_AGENT
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -21,6 +22,8 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Maps.Services;
+using Microsoft.Phone.Scheduler;
+
 using Microsoft.Xna.Framework;
 using PhoneServices = Microsoft.Phone.Maps.Services;
 
@@ -41,7 +44,11 @@ using GART.Controls;
 namespace NavAR
 {
     public partial class MainPage : PhoneApplicationPage
-    { 
+    {
+        private PeriodicTask PeriodicTask;
+        private String PeriodicTaskName = "Update Live Tile";
+        public bool EnableAgents = true;
+
         // Flags/Modes
         private readonly bool DEMO = false;
         
@@ -108,7 +115,7 @@ namespace NavAR
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void MainPage_Loaded(object sender, RoutedEventArgs e)
+        private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             TimeSpan initialTimeSpan = new TimeSpan(0, 0, 1);
 
@@ -142,8 +149,59 @@ namespace NavAR
             CompassTimer.Tick += new EventHandler(DisplayCurrentReading);
             CompassTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             CompassTimer.Start();
+
+            // Start updating the live tile
+            StartPeriodicAgent();
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void StartPeriodicAgent()
+        {
+            // Check if old task is running, remove if it is
+            EnableAgents = true;
+            IEnumerable<PeriodicTask> actions = ScheduledActionService.GetActions<PeriodicTask>();
+            PeriodicTask = ScheduledActionService.Find(PeriodicTaskName) as PeriodicTask;
+            if (PeriodicTask != null)
+            {
+                try
+                {
+                    ScheduledActionService.Remove(PeriodicTaskName);
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            // Start a new task
+            PeriodicTask = new PeriodicTask(PeriodicTaskName);
+            PeriodicTask.Description = "This is a NavAR application's live tile update agent.";
+            PeriodicTask.ExpirationTime = DateTime.Now.AddMinutes(5);
+            try
+            {
+                ScheduledActionService.Add(PeriodicTask);
+
+#if DEBUG_AGENT
+                ScheduledActionService.LaunchForTest(PeriodicTaskName, TimeSpan.FromSeconds(10));
+                System.Diagnostics.Debug.WriteLine("Periodic task is started: " + PeriodicTaskName);
+#endif
+            }
+            catch (InvalidOperationException exception)
+            {
+                // User action is required to avoid the exception next time
+                if (exception.Message.Contains("BNS Error: The action is disabled"))
+                {
+                    MessageBox.Show("Background agents for this application have been disabled by the user");
+                }
+            }
+            // Otherwise, no user action is required
+            catch (SchedulerServiceException)
+            {
+
+            }
+        }
+
         /// <summary>
         /// Demo Walk simulation
         /// </summary>
@@ -166,7 +224,7 @@ namespace NavAR
                 }
 
                 DemoTimer.Tick += new EventHandler(DemoWalk);
-                DemoTimer.Interval = new TimeSpan(0, 0, 2);
+                DemoTimer.Interval = new TimeSpan(0, 0, 3);
                 DemoTimer.Start();
             };
             MyQuery.QueryAsync();
@@ -381,23 +439,24 @@ namespace NavAR
         private void DrawMapMarkers(object sender, EventArgs e)
         {
             MyMap.Layers.Clear();
-            ARDisplay.ARItems.Clear();
-
             MarkerMapLayer = new MapLayer();
-         
-            // Draw marker for current position
-            if (MyCoordinate != null)
-            {
-                DrawAccuracyRadius(MarkerMapLayer);
-                DrawMapMarker(MyCoordinate, Media.Colors.Red, MarkerMapLayer);
-            }
 
+            HashSet<ARItem> currentItems = new HashSet<ARItem>(ARDisplay.ARItems);
             // Draw markers for nearby bus stops
             foreach (BusStop busStop in LocalBusStops)
             {
                 DrawMapMarker(busStop.GeoLocation, Media.Colors.Blue, MarkerMapLayer);
 
-                ARDisplay.ARItems.Add(busStop);
+                ARItem found = ARDisplay.ARItems.SingleOrDefault(item => (item.GetType() == typeof(BusStop)) && (item as BusStop).Name == busStop.Name);
+                if (found != null)
+                {
+                    found.GeoLocation = busStop.GeoLocation;
+                    currentItems.Remove(found);
+                }
+                else
+                {
+                    ARDisplay.ARItems.Add(busStop);
+                }
                 //ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name});
             }
 
@@ -408,14 +467,36 @@ namespace NavAR
                 if (distanceTo <= ScanRadiusInMetres)
                 {
                     DrawMapMarker(bus.Coordinate, Media.Colors.Green, MarkerMapLayer);
-                    ARItem item = new ARItem()
+                    ARItem busARItem = new ARItem()
                     {
                         Content = bus.MTDId,
                         GeoLocation = bus.Coordinate
                     };
 
-                    ARDisplay.ARItems.Add(item);
+                    ARItem found = ARDisplay.ARItems.SingleOrDefault(item => (item.GetType() == typeof(Bus)) && (item as Bus).MTDId == bus.MTDId);
+                    if (found != null)
+                    {
+                        found.GeoLocation = bus.GeoLocation;
+                        currentItems.Remove(found);
+                    }
+                    else
+                    {
+                        ARDisplay.ARItems.Add(busARItem);
+                    }
                 }
+            }
+
+            // Remove items that went off radar
+            foreach (ARItem item in currentItems)
+            {
+                ARDisplay.ARItems.Remove(item);
+            }
+
+            // Draw marker for current position
+            if (MyCoordinate != null)
+            {
+                DrawAccuracyRadius(MarkerMapLayer);
+                DrawMapMarker(MyCoordinate, Media.Colors.Red, MarkerMapLayer);
             }
 
             MyMap.Layers.Add(MarkerMapLayer);
@@ -537,7 +618,7 @@ namespace NavAR
         /// <summary>
         /// Reverse Gecoding, used to convert geocoordinate (lat,lon) to a physical address (street, country, ...)
         /// 
-        /// Currently unused. Even setup:
+        /// Currently unused. Event setup:
         ///     MyReverseGeocodeQuery = new ReverseGeocodeQuery();
         ///     MyReverseGeocodeQuery.GeoCoordinate = new GeoCoordinate(geoCoordinate.Latitude, geoCoordinate.Longitude);
         ///     MyReverseGeocodeQuery.QueryCompleted += ReverseGeocodeQuery_QueryCompleted;
@@ -585,3 +666,45 @@ namespace NavAR
         //}
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,5 +16,23 @@ namespace NavAR.Entities
     {
         public GeoCoordinate Coordinate { get; set; }
         public String MTDId { get; set; }
+
+        public override int GetHashCode()
+        {
+            return this.MTDId.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            Bus busObj = obj as Bus;
+            if (busObj == null)
+            {
+                return false;
+            }
+            else
+            {
+                return this.MTDId == busObj.MTDId;
+            }
+        }
     }
 }
