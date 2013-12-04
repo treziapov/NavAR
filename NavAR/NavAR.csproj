@@ -202,11 +202,11 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GART.WP8">
-      <HintPath>..\..\..\..\My Libraries\VisualStudio\GART_1_2_0\Lib\WP8\x86\GART.WP8.dll</HintPath>
+      <HintPath>..\..\..\GART_1_2_0\Lib\WP8\ARM\GART.WP8.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone.Controls.Maps, Version=8.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone.Controls.Toolkit">
-      <HintPath>..\..\..\..\My Libraries\VisualStudio\GART_1_2_0\Lib\WP8\x86\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
+      <HintPath>..\..\..\GART_1_2_0\Lib\WP8\ARM\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
