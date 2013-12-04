@@ -670,7 +670,10 @@ namespace NavAR
         /// <summary>
         /// Use MTD API to locate a specific number of bus stops closest to you in real time
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 79e36c84fd399af0b37743798bb9d466e1f8f524
         /// </summary>
         public void LocateBusStopsInRealTime(object sender, EventArgs e)
         {
