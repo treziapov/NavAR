@@ -40,11 +40,15 @@ using GART;
 using GART.BaseControls;
 using GART.Data;
 using GART.Controls;
+using System.IO.IsolatedStorage;
+using IsolatedStorage;
 
 namespace NavAR
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
+
         private PeriodicTask PeriodicTask;
         private String PeriodicTaskName = "Update Live Tile";
         public bool EnableAgents = true;
@@ -63,7 +67,6 @@ namespace NavAR
         private RouteQuery MyQuery = null;
         private List<GeoCoordinate> MyCoordinates = new List<GeoCoordinate>();
         private MapRoute MyMapRoute = null;
-        //private ReverseGeocodeQuery MyReverseGeocodeQuery = null;
 
         // MTD/transit variables
         private HashSet<Bus> LocalBuses = new HashSet<Bus>();
@@ -102,9 +105,6 @@ namespace NavAR
         public MainPage()
         {
             InitializeComponent();
-
-            // Sample code to localize the ApplicationBar
-            //BuildLocalizedApplicationBar();
 
             // Fire off logic once the page loads
             Loaded += MainPage_Loaded;
@@ -177,7 +177,7 @@ namespace NavAR
             // Start a new task
             PeriodicTask = new PeriodicTask(PeriodicTaskName);
             PeriodicTask.Description = "This is a NavAR application's live tile update agent.";
-            PeriodicTask.ExpirationTime = DateTime.Now.AddMinutes(5);
+            PeriodicTask.ExpirationTime = DateTime.Now.AddMinutes(60);
             try
             {
                 ScheduledActionService.Add(PeriodicTask);
@@ -195,10 +195,9 @@ namespace NavAR
                     MessageBox.Show("Background agents for this application have been disabled by the user");
                 }
             }
-            // Otherwise, no user action is required
             catch (SchedulerServiceException)
             {
-
+                // Otherwise, no user action is required
             }
         }
 
@@ -230,6 +229,11 @@ namespace NavAR
             MyQuery.QueryAsync();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DemoWalk(object sender, EventArgs e)
         {
             if (DemoVisitCoordinates.Count < 1)
@@ -270,12 +274,6 @@ namespace NavAR
                     {
                         MyCoordinate = newCoordinate;
                         MyMap.SetView(MyCoordinate, 15d);
-                    }
-                    else if (MyCoordinate != newCoordinate)
-                    {
-                        // Moves Map view to your coordinate, not always desired
-                        // TODO: Add a button for the user to move to current location when it's out of center
-                        //MyMap.SetView(MyCoordinate, MyMap.ZoomLevel);
                     }
 
                     LocationTimer.Interval = new TimeSpan(0, 0, 5);
@@ -334,6 +332,17 @@ namespace NavAR
                     BusStopScanTimer.Interval = new TimeSpan(0, 0, 2);     // 10 seconds
                     BusStopScanTimer.Start();
                 };
+
+            // Store the AR items in the shared isolated storage
+            List<StoredBusStop> stops = LocalBusStops.Select(stop => 
+                new StoredBusStop()
+                {
+                    Name = stop.Name,
+                    Latitude = stop.GeoLocation.Latitude,
+                    Longitude = stop.GeoLocation.Longitude
+                }
+            ).ToList();
+            IsolatedStorage.Manager.WriteStops(stops);
         }
 
         /// <summary>
@@ -397,7 +406,6 @@ namespace NavAR
         {
             // Stop AR services
             ARDisplay.StopServices();
-
             base.OnNavigatedFrom(e);
         }
 
@@ -405,7 +413,6 @@ namespace NavAR
         {
             // Start AR services
             ARDisplay.StartServices();
-
             base.OnNavigatedTo(e);
         }
 
@@ -467,6 +474,7 @@ namespace NavAR
                 if (distanceTo <= ScanRadiusInMetres)
                 {
                     DrawMapMarker(bus.Coordinate, Media.Colors.Green, MarkerMapLayer);
+
                     ARItem busARItem = new ARItem()
                     {
                         Content = bus.MTDId,
@@ -646,24 +654,6 @@ namespace NavAR
                 //MyReverseGeocodeQuery.Dispose();
             }
         }
-
-        /// <summary>
-        /// Sample code for building a localized ApplicationBar
-        /// </summary>
-        //private void BuildLocalizedApplicationBar()
-        //{
-        //    // Set the page's ApplicationBar to a new instance of ApplicationBar.
-        //    ApplicationBar = new ApplicationBar();
-
-        //    // Create a new button and set the text value to the localized string from AppResources.
-        //    ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
-        //    appBarButton.Text = AppResources.AppBarButtonText;
-        //    ApplicationBar.Buttons.Add(appBarButton);
-
-        //    // Create a new menu item with the localized string from AppResources.
-        //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
-        //    ApplicationBar.MenuItems.Add(appBarMenuItem);
-        //}
     }
 }
 

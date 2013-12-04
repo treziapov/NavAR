@@ -214,6 +214,10 @@
       <Project>{D6DC7AA8-B4A2-4EDB-B8FF-C1DDF228F6E7}</Project>
       <Name>LiveTileScheduledTaskAgent</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ShareData\IsolatedStorageData.csproj">
+      <Project>{37FA1E35-52D2-46F4-849D-D3B772CD2B2A}</Project>
+      <Name>IsolatedStorageData</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

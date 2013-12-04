@@ -3,8 +3,17 @@ using System.Diagnostics;
 using System.Windows;
 using Microsoft.Phone.Scheduler;
 using Microsoft.Phone.Shell;
+using Windows.Devices.Geolocation;
+using Windows.Devices.Sensors;
 using System.Linq;
 using System;
+
+using GART;
+using System.Threading;
+using GART.Data;
+using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using IsolatedStorage;
 
 namespace LiveTileScheduledTaskAgent
 {
@@ -50,18 +59,31 @@ namespace LiveTileScheduledTaskAgent
             ShellTile tile = ShellTile.ActiveTiles.First();
             if (tile != null)
             {
+                // Read from the shared isolated storage
+                List<IsolatedStorage.StoredBusStop> sharedStops = IsolatedStorage.Manager.ReadStops();
+                
                 // Create new data for the live tile
-                StandardTileData tileData = new StandardTileData();
+                FlipTileData tileData = new FlipTileData();
                 tileData.Title = "Updated live tile title";
                 tileData.Count = random.Next(99);
-                tileData.BackContent = "Updated live tile back content";
+                tileData.WideBackContent = "Bus stops: ";
+
+                // Find some bus stop
+                if (sharedStops!= null && sharedStops.Count > 0)
+                {
+                    for (int i = 0; i < Math.Min(sharedStops.Count, 5); i++)
+                    {
+                        tileData.WideBackContent += sharedStops[i].Name + ",";
+                    }
+                    tileData.WideBackContent.Trim(',');
+                }
 
                 // Update the live tile
                 tile.Update(tileData);
             }
 
 #if DEBUG_AGENT
-            ScheduledActionService.LaunchForTest(task.Name, TimeSpan.FromSeconds(30));
+            ScheduledActionService.LaunchForTest(task.Name, TimeSpan.FromSeconds(10));
             System.Diagnostics.Debug.WriteLine("Periodic task is started again: " + task.Name);
 #endif
 
