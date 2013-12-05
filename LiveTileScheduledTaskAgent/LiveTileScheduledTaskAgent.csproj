@@ -88,11 +88,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="GART.WP8">
-      <HintPath>..\..\..\..\My Libraries\VisualStudio\GART_1_2_0\Lib\WP8\x86\GART.WP8.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +95,11 @@
       <Project>{37FA1E35-52D2-46F4-849D-D3B772CD2B2A}</Project>
       <Name>IsolatedStorageData</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="GART.WP8">
+      <HintPath>..\..\..\..\Downloads\GART_1_2_0\GART_1_2_0\Lib\WP8\x86\GART.WP8.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

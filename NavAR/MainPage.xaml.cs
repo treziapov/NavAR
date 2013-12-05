@@ -23,6 +23,7 @@ using Microsoft.Phone.Shell;
 using Microsoft.Phone.Maps.Controls;
 using Microsoft.Phone.Maps.Services;
 using Microsoft.Phone.Scheduler;
+using Microsoft.Phone.Maps.Toolkit;
 
 using Microsoft.Xna.Framework;
 using PhoneServices = Microsoft.Phone.Maps.Services;
@@ -400,6 +401,7 @@ namespace NavAR
             {
                 // Initialize API client and send a request
                 WsServiceClient client = new WsServiceClient();
+    
                 client.GetDeparturesByStopAsync(MTDAPI.API_KEY, MyBusStop.MTDId, String.Empty, 60, 5);
                 client.GetDeparturesByStopCompleted +=
                     (object requestSender, GetDeparturesByStopCompletedEventArgs requestEventArgs) =>
@@ -464,8 +466,9 @@ namespace NavAR
             // Draw markers for nearby bus stops
             foreach (BusStop busStop in LocalBusStops)
             {
-                DrawMapMarker(busStop.GeoLocation, Media.Colors.Blue, MarkerMapLayer);
-
+                //DrawMapMarker(busStop.GeoLocation, Media.Colors.Blue, MarkerMapLayer);
+                AddPushPinStop(busStop, MarkerMapLayer);
+            
                 ARItem found = ARDisplay.ARItems.SingleOrDefault(item => (item.GetType() == typeof(BusStop)) && (item as BusStop).Name == busStop.Name);
                 if (found != null)
                 {
@@ -486,7 +489,8 @@ namespace NavAR
                 if (distanceTo <= ScanRadiusInMetres)
                 {
                     DrawMapMarker(bus.Coordinate, Media.Colors.Green, MarkerMapLayer);
-
+                    //AddPushPin(bus.GeoLocation, Media.Colors.Green, MarkerMapLayer, "bus", "some bus");
+                    
                     ARItem busARItem = new ARItem()
                     {
                         Content = bus.MTDId,
@@ -575,7 +579,92 @@ namespace NavAR
             overlay.PositionOrigin = new WinPoint(0.0, 1.0);
             mapLayer.Add(overlay);
         }
-        
+        private void ShowSchedule(Pushpin p) 
+        {
+            WsServiceClient client = new WsServiceClient();
+           
+            client.GetDeparturesByStopAsync(MTDAPI.API_KEY, p.Name.ToString(), String.Empty, 60, 5);
+            client.GetDeparturesByStopCompleted +=
+                (object requestSender, GetDeparturesByStopCompletedEventArgs requestEventArgs) =>
+                {
+                    rsp result = requestEventArgs.Result;
+                    if (result.departures.Count > 0)
+                    {
+                        String buses = "";
+                        for (int i = 0; i < result.departures.Count; i++)
+                        {
+                            departure dep = result.departures[i];
+                            String nameRoute = dep.headsign.ToString();
+                            String time = dep.expected_mins.ToString();
+                            buses+=nameRoute+" in "+time+"min, ";
+                        }
+                        MessageBox.Show(buses);
+                    }
+                    else 
+                    {
+                        MessageBox.Show("There are no buses");
+                    }
+                };
+            //MessageBox.Show("Unsuccesfull query");
+        }
+        private void StopPinTapped(object sender, EventArgs e) 
+        {
+            var p = sender as Pushpin;
+            
+            ShowSchedule(p);
+            
+            GeoCoordinate geoCoordinate = (GeoCoordinate)p.Tag;
+
+            MyQuery = new RouteQuery();
+
+            // Emtpy coordinates from previous queries
+            MyCoordinates.Clear();
+
+            // Add own coordinate
+            MyCoordinates.Add(MyCoordinate);
+
+            // Add destination coordinate
+            MyCoordinates.Add(geoCoordinate);
+            MyQuery.Waypoints = MyCoordinates;
+            MyQuery.QueryCompleted += (object querySender, QueryCompletedEventArgs<PhoneServices.Route> queryEventArgs) =>
+            {
+                if (queryEventArgs.Error == null)
+                {
+                    // Remove an existing route
+                    if (MyMapRoute != null)
+                    {
+                        MyMap.RemoveRoute(MyMapRoute);
+                    }
+                    // Update and draw the new map route
+                    MyMapRoute = new MapRoute(queryEventArgs.Result);
+                    MyMap.AddRoute(MyMapRoute);
+                    MyQuery.Dispose();
+                }
+            };
+            MyQuery.QueryAsync(); 
+
+        }
+        private void AddPushPinStop(BusStop busStop, MapLayer mapLayer) 
+        {
+            // Create a map pushpin
+            Pushpin pp = new Pushpin();
+
+            pp.Content = busStop.Name.ToString();
+            pp.Background = new SolidColorBrush(Media.Colors.Blue);
+            pp.Name = busStop.MTDId.ToString();
+            pp.Tag = new GeoCoordinate(busStop.GeoLocation.Latitude, busStop.GeoLocation.Longitude); ;
+            
+            pp.Tap+= new EventHandler<System.Windows.Input.GestureEventArgs>(StopPinTapped);
+            
+            // Create a MapOverlay and add marker
+            MapOverlay overlay = new MapOverlay();
+            overlay.Content = pp;
+            overlay.GeoCoordinate = new GeoCoordinate(busStop.GeoLocation.Latitude, busStop.GeoLocation.Longitude);
+            overlay.PositionOrigin = new WinPoint(0.0, 1.0);
+            mapLayer.Add(overlay);
+        } 
+
+
         /// <summary>
         /// Event fired whenever any of the markers are clicked
         /// Draws a path from user's location to the clicked marker
