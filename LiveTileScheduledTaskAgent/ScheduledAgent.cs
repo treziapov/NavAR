@@ -20,6 +20,7 @@ using System.Windows.Media;
 using System.IO;
 
 using ToolStackPNGWriterLib;
+using LiveTileScheduledTaskAgent.MTDService;
 
 namespace LiveTileScheduledTaskAgent
 {
@@ -97,6 +98,9 @@ namespace LiveTileScheduledTaskAgent
             }
         }
 
+        /// <summary>
+        /// Load the default bmp image for the tile back and front
+        /// </summary>
         private void StartCreateTileImage()
         {
             var bmp = new BitmapImage
@@ -108,6 +112,11 @@ namespace LiveTileScheduledTaskAgent
             bmp.UriSource = new Uri("TileImages/back.png", UriKind.RelativeOrAbsolute);
         }
 
+        /// <summary>
+        /// Default bmp images are loaded, start processing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnBackgroundBmpOpened(object sender, RoutedEventArgs e)
         {
             var img = sender as BitmapImage;
@@ -116,23 +125,43 @@ namespace LiveTileScheduledTaskAgent
             UpdateTileIcon();
         }
 
+        /// <summary>
+        /// Create custom images for the Live Tile
+        /// </summary>
+        /// <param name="img"></param>
+        /// <returns></returns>
         private WriteableBitmap CreateTileImage(BitmapImage img)
         {
-            var image = new Image { 
+            var image = new Image 
+            { 
                 Source = img,
                 Width = TILE_SIZE.Width,
                 Height = TILE_SIZE.Height
             };
  
-            Canvas.SetLeft(image, 0);
-            Canvas.SetTop(image, 0);
- 
+            // Initialize text to display on tile
             var textBlock = new TextBlock
             {
                 Foreground = new SolidColorBrush(Colors.White),
-                FontSize = 64,
-                Text = "WOOHOO!"
+                FontSize = 30,
+                Text = ""
             };
+
+            // Read stops from the main app
+            List<IsolatedStorage.StoredBusStop> sharedStops = IsolatedStorage.Manager.ReadStops();
+            
+            // Find some bus stop
+            if (sharedStops == null || sharedStops.Count <= 0)
+            {
+                textBlock.Text += "No local poinits of interest";
+            }
+            else
+            {
+                for (int i = 0; i < Math.Min(sharedStops.Count, 3); i++)
+                {
+                    textBlock.Text += sharedStops[i].Name + "\n\t" + sharedStops[i].Departures + "\n";
+                }
+            }
  
             // Measure the actual size of the TextBlock, this is with
             // the characters full hight/width (includning char spacing)
@@ -140,8 +169,8 @@ namespace LiveTileScheduledTaskAgent
             var height = textBlock.ActualHeight;
  
             // Place the text in the lower right corner
-            Canvas.SetLeft(textBlock, 165 - width);
-            Canvas.SetTop(textBlock, 176 - height);
+            Canvas.SetLeft(textBlock, 10);
+            Canvas.SetTop(textBlock, 60);
  
             // Create a canvas and place the image and text on it
             var canvas = new Canvas
@@ -188,9 +217,7 @@ namespace LiveTileScheduledTaskAgent
         {
             FlipTileData tileData = new FlipTileData
             {
-                WideBackgroundImage = new Uri("isostore:/" + TILE_TEXT_IMAGE_URI, UriKind.RelativeOrAbsolute),
-                Title = "Added text image to front",
-                BackTitle = "Added text image to front"
+                WideBackBackgroundImage = new Uri("isostore:/" + TILE_TEXT_IMAGE_URI, UriKind.RelativeOrAbsolute)
             };
 
             var tile = ShellTile.ActiveTiles.First();

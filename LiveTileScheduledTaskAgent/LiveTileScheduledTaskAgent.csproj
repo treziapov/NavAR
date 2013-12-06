@@ -86,6 +86,11 @@
   <ItemGroup>
     <Compile Include="ScheduledAgent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service References\MTDService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="ToolStackPNG\ToolStackCRCLib.cs" />
     <Compile Include="ToolStackPNG\ToolStackPNGWriterLib.cs" />
   </ItemGroup>
@@ -99,11 +104,46 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\MTDService\LiveTileScheduledTaskAgent.MTDService.rsp.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\MTDService\Service.disco" />
+    <None Include="Service References\MTDService\configuration91.svcinfo" />
+    <None Include="Service References\MTDService\configuration.svcinfo" />
+    <None Include="Service References\MTDService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
     <Content Include="TileImages\back.png" />
     <Content Include="TileImages\front.png" />
     <Reference Include="GART.WP8">
       <HintPath>..\..\..\..\Downloads\GART_1_2_0\GART_1_2_0\Lib\WP8\x86\GART.WP8.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MTDService\Service.wsdl" />
+    <None Include="Service References\MTDService\Service.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MTDService\Service1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MTDService\Service2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MTDService\Service3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MTDService\Service4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MTDService\Service5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="ServiceReferences.ClientConfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\MTDService\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />

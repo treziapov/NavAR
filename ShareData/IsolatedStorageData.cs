@@ -25,6 +25,8 @@ namespace IsolatedStorage
         public Double Latitude { get; set; }
         public Double Longitude { get; set; }
         public String Name { get; set; }
+        public String Departures { get; set; }
+        public String MTDId { get; set; }
     }
 
     /// <summary>

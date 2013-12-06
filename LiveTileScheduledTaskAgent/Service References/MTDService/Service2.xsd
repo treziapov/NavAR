@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Cumtd.Developer.Api" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Cumtd.Developer.Api" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://developer.cumtd.com/api/v2.2/Service.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Cumtd.Developer.Api.TripPlanner" />
+  <xs:complexType name="rsp">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="time" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="changeset_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="new_changeset" type="xs:boolean" />
+      <xs:element minOccurs="0" name="status" nillable="true" type="tns:Status">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="rqst" nillable="true" type="tns:rqst">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="calendar_dates" nillable="true" type="tns:ArrayOfCalendarDate">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="days" nillable="true" type="tns:ArrayOfUsageDay">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="departures" nillable="true" type="tns:ArrayOfdeparture">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Cumtd.Developer.Api.TripPlanner" minOccurs="0" name="itineraries" nillable="true" type="q1:ArrayOfItinerary">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="last_updated" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="reroutes" nillable="true" type="tns:ArrayOfReroute">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="routes" nillable="true" type="tns:ArrayOfRoute">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="shapes" nillable="true" type="tns:ArrayOfShape">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="stop_times" nillable="true" type="tns:ArrayOfStopTime">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="stops" nillable="true" type="tns:ArrayOfStop">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="trips" nillable="true" type="tns:ArrayOfTrip">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="vehicles" nillable="true" type="tns:ArrayOfvehicle">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="rsp" nillable="true" type="tns:rsp" />
+  <xs:complexType name="Status">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="code" type="xs:int" />
+      <xs:element minOccurs="0" name="msg" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Status" nillable="true" type="tns:Status" />
+  <xs:complexType name="rqst">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="method" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="params" nillable="true" type="tns:params">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="rqst" nillable="true" type="tns:rqst" />
+  <xs:complexType name="params">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arrive_depart" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="begin_stop_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="block_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="changeset_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="count" type="xs:int">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="date" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="destination_lat" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="destination_lon" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="destination_stop_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="end_date" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="end_stop_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="lat" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="lon" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="max_walk" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="method" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="minimize" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="origin_lat" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="origin_lon" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="origin_stop_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="pt" type="xs:int">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="query" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="route_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="service_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="shape_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="start_date" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="stop_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="time" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="trip_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="vehicle_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="version" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="params" nillable="true" type="tns:params" />
+  <xs:complexType name="ArrayOfCalendarDate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CalendarDate" nillable="true" type="tns:CalendarDate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCalendarDate" nillable="true" type="tns:ArrayOfCalendarDate" />
+  <xs:complexType name="CalendarDate">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="date" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="service_id" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CalendarDate" nillable="true" type="tns:CalendarDate" />
+  <xs:complexType name="ArrayOfUsageDay">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UsageDay" nillable="true" type="tns:UsageDay" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUsageDay" nillable="true" type="tns:ArrayOfUsageDay" />
+  <xs:complexType name="UsageDay">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="date" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="calls" type="xs:decimal" />
+      <xs:element minOccurs="0" name="versions" nillable="true" type="tns:ArrayOfUsageVersion" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UsageDay" nillable="true" type="tns:UsageDay" />
+  <xs:complexType name="ArrayOfUsageVersion">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UsageVersion" nillable="true" type="tns:UsageVersion" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUsageVersion" nillable="true" type="tns:ArrayOfUsageVersion" />
+  <xs:complexType name="UsageVersion">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="number" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="calls" type="xs:decimal" />
+      <xs:element minOccurs="0" name="methods" nillable="true" type="tns:ArrayOfUsageMethod" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UsageVersion" nillable="true" type="tns:UsageVersion" />
+  <xs:complexType name="ArrayOfUsageMethod">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="UsageMethod" nillable="true" type="tns:UsageMethod" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfUsageMethod" nillable="true" type="tns:ArrayOfUsageMethod" />
+  <xs:complexType name="UsageMethod">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="calls" type="xs:decimal" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="UsageMethod" nillable="true" type="tns:UsageMethod" />
+  <xs:complexType name="ArrayOfdeparture">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="departure" nillable="true" type="tns:departure" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfdeparture" nillable="true" type="tns:ArrayOfdeparture" />
+  <xs:complexType name="departure">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="stop_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="headsign" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="route" nillable="true" type="tns:Route" />
+      <xs:element minOccurs="0" name="trip" nillable="true" type="tns:Trip">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="vehicle_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="origin" nillable="true" type="tns:BusStopReference" />
+      <xs:element minOccurs="0" name="destination" nillable="true" type="tns:BusStopReference" />
+      <xs:element minOccurs="0" name="is_monitored" type="xs:boolean" />
+      <xs:element minOccurs="0" name="is_scheduled" type="xs:boolean" />
+      <xs:element minOccurs="0" name="is_istop" type="xs:boolean" />
+      <xs:element minOccurs="0" name="scheduled" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="expected" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="expected_mins" type="xs:int" />
+      <xs:element minOccurs="0" name="location" nillable="true" type="tns:Location" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="departure" nillable="true" type="tns:departure" />
+  <xs:complexType name="Route">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="route_color" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="route_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="route_long_name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="route_short_name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="route_text_color" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Route" nillable="true" type="tns:Route" />
+  <xs:complexType name="Trip">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="trip_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="trip_headsign" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="route_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="block_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="direction" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="service_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="shape_id" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Trip" nillable="true" type="tns:Trip" />
+  <xs:complexType name="BusStopReference">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="stop_id" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="BusStopReference" nillable="true" type="tns:BusStopReference" />
+  <xs:complexType name="Location">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="lat" type="xs:decimal" />
+      <xs:element minOccurs="0" name="lon" type="xs:decimal" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Location" nillable="true" type="tns:Location" />
+  <xs:complexType name="ArrayOfReroute">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Reroute" nillable="true" type="tns:Reroute" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfReroute" nillable="true" type="tns:ArrayOfReroute" />
+  <xs:complexType name="Reroute">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="start_date" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="end_date" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="message" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="description" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="affected_routes" nillable="true" type="tns:ArrayOfRoute">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Reroute" nillable="true" type="tns:Reroute" />
+  <xs:complexType name="ArrayOfRoute">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Route" nillable="true" type="tns:Route" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfRoute" nillable="true" type="tns:ArrayOfRoute" />
+  <xs:complexType name="ArrayOfShape">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Shape" nillable="true" type="tns:Shape" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfShape" nillable="true" type="tns:ArrayOfShape" />
+  <xs:complexType name="Shape">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="shape_dist_traveled" type="xs:decimal" />
+      <xs:element minOccurs="0" name="shape_pt_lat" type="xs:decimal" />
+      <xs:element minOccurs="0" name="shape_pt_lon" type="xs:decimal" />
+      <xs:element minOccurs="0" name="shape_pt_sequence" type="xs:int" />
+      <xs:element minOccurs="0" name="stop_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Shape" nillable="true" type="tns:Shape" />
+  <xs:complexType name="ArrayOfStopTime">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="StopTime" nillable="true" type="tns:StopTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfStopTime" nillable="true" type="tns:ArrayOfStopTime" />
+  <xs:complexType name="StopTime">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arrival_time" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="departure_time" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="stop_sequence" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="stop_id" nillable="true" type="xs:string">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="stop_point" nillable="true" type="tns:StopPoint">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="trip" nillable="true" type="tns:Trip">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="StopTime" nillable="true" type="tns:StopTime" />
+  <xs:complexType name="StopPoint">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="code" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="distance" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="rank" type="xs:int">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="stop_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="stop_lat" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="stop_lon" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="stop_name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="StopPoint" nillable="true" type="tns:StopPoint" />
+  <xs:complexType name="ArrayOfStop">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Stop" nillable="true" type="tns:Stop" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfStop" nillable="true" type="tns:ArrayOfStop" />
+  <xs:complexType name="Stop">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="stop_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="stop_name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="code" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="distance" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="percent_match" type="xs:decimal">
+        <xs:annotation>
+          <xs:appinfo>
+            <DefaultValue EmitDefaultValue="false" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:element>
+      <xs:element minOccurs="0" name="stop_points" nillable="true" type="tns:ArrayOfStopPoint" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Stop" nillable="true" type="tns:Stop" />
+  <xs:complexType name="ArrayOfStopPoint">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="StopPoint" nillable="true" type="tns:StopPoint" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfStopPoint" nillable="true" type="tns:ArrayOfStopPoint" />
+  <xs:complexType name="ArrayOfTrip">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Trip" nillable="true" type="tns:Trip" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTrip" nillable="true" type="tns:ArrayOfTrip" />
+  <xs:complexType name="ArrayOfvehicle">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="vehicle" nillable="true" type="tns:vehicle" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfvehicle" nillable="true" type="tns:ArrayOfvehicle" />
+  <xs:complexType name="vehicle">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="vehicle_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="trip" nillable="true" type="tns:Trip" />
+      <xs:element minOccurs="0" name="location" nillable="true" type="tns:Location" />
+      <xs:element minOccurs="0" name="previous_stop_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="next_stop_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="origin_stop_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="destination_stop_id" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="last_updated" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="vehicle" nillable="true" type="tns:vehicle" />
+</xs:schema>

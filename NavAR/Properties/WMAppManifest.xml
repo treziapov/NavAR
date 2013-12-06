@@ -32,7 +32,7 @@
           <BackTitle>
           </BackTitle>
           <LargeBackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipCycleTileLarge.png</LargeBackgroundImageURI>
-          <LargeBackContent>This is the back</LargeBackContent>
+          <LargeBackContent>Local schedule</LargeBackContent>
           <LargeBackBackgroundImageURI IsRelative="true" IsResource="false">Assets\Tiles\FlipTileLargeBack.png</LargeBackBackgroundImageURI>
           <DeviceLockImageURI>
           </DeviceLockImageURI>

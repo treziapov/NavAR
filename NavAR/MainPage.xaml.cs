@@ -352,10 +352,39 @@ namespace NavAR
                 {
                     Name = stop.Name,
                     Latitude = stop.GeoLocation.Latitude,
-                    Longitude = stop.GeoLocation.Longitude
+                    Longitude = stop.GeoLocation.Longitude,
+                    MTDId = stop.MTDId,
+                    Departures = null
                 }
             ).ToList();
-            IsolatedStorage.Manager.WriteStops(stops);
+
+            // Get departures and also store them
+            foreach (var stop in stops)
+            {
+                client.GetDeparturesByStopAsync(MTDAPI.API_KEY, stop.MTDId, String.Empty, 60, 5);
+                client.GetDeparturesByStopCompleted +=
+                    (object requestSender, GetDeparturesByStopCompletedEventArgs requestEventArgs) =>
+                    {
+                        rsp result = requestEventArgs.Result;
+                        if (result.departures.Count > 0)
+                        {
+                            String buses = "";
+                            for (int i = 0; i < result.departures.Count; i++)
+                            {
+                                departure dep = result.departures[i];
+                                String nameRoute = dep.headsign.ToString();
+                                String time = dep.expected_mins.ToString();
+                                buses += nameRoute + ": " + time + "m, ";
+                            }
+                            buses.Trim(new char[] {',', ' '});
+                            stop.Departures = buses;
+                        }
+                        if (stops.Last().Departures != null)
+                        {
+                            IsolatedStorage.Manager.WriteStops(stops);
+                        }
+                    };
+            }
         }
 
         /// <summary>
@@ -483,7 +512,7 @@ namespace NavAR
                 {
                     ARDisplay.ARItems.Add(busStop);
                 }
-                //ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name});
+                //ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name });
             }
 
             // Drawmarkers for nearby buses
