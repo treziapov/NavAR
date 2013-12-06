@@ -32,12 +32,12 @@
                         <RowDefinition Height="0.33*"/>
                         <RowDefinition Height="16"/>
                     </Grid.RowDefinitions>
-                    <Image Grid.RowSpan="3" Source="Icons/bus.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Image Grid.RowSpan="3" Source="{Binding IconFilePath}" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
                     <TextBlock x:Name="NameBlock" TextWrapping="NoWrap" Text="{Binding Content}" FontSize="16" VerticalAlignment="Center" Margin="0,0,4,0" d:LayoutOverrides="Width" Grid.Column="1" TextTrimming="WordEllipsis"/>
                 </Grid>
             </Border>
         </DataTemplate>
-        <DataTemplate x:Key="BusStop">
+        <DataTemplate x:Key="NavARItem">
             <Border BorderBrush="Black" BorderThickness="4" CornerRadius="8" Background="#FF003847" Width="320">
                 <Grid Margin="4">
                     <Grid.ColumnDefinitions>
@@ -50,10 +50,10 @@
                         <RowDefinition Height="16"/>
                     </Grid.RowDefinitions>
                     <Image Grid.RowSpan="3" Source="{Binding IconFilePath}" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <TextBlock x:Name="NameBlock" TextWrapping="NoWrap" Text="{Binding Name}" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" d:LayoutOverrides="Width" Grid.Column="1" TextTrimming="WordEllipsis"/>
-                    <TextBlock x:Name="TypeBlock" TextWrapping="NoWrap" Text="{Binding MTDId}" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Grid.Column="1" d:LayoutOverrides="Width" Grid.Row="1" TextTrimming="WordEllipsis"/>
+                    <TextBlock x:Name="NameBlock" TextWrapping="NoWrap" Text="{Binding Name}" FontSize="20" VerticalAlignment="Center" Margin="0,0,4,0" d:LayoutOverrides="Width" Grid.Column="1" TextTrimming="WordEllipsis"/>
+                    <TextBlock x:Name="TypeBlock" TextWrapping="NoWrap" Text="{Binding NextStopID}" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" d:LayoutOverrides="Width" Grid.Column="1" Grid.Row="1" TextTrimming="WordEllipsis"/>
                     <!-- Could use this to gauge distance later -->
-                    <ProgressBar x:Name="RatingBar" Grid.Row="2" Grid.Column="1" Maximum="10" Value="8" VerticalAlignment="Center"/>
+                    <!--<ProgressBar x:Name="RatingBar" Grid.Row="2" Grid.Column="1" Maximum="10" Value="8" VerticalAlignment="Center"/>-->
                 </Grid>
             </Border>
         </DataTemplate>
@@ -130,7 +130,7 @@
         
         <ARControls:ARDisplay x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10" Margin="12,20,8,0" Grid.Row="1" >
             <ARControls:VideoPreview x:Name="VideoPreview" Margin="10,-5,0,10" Visibility="Collapsed"/>
-            <ARControls:WorldView x:Name="WorldView" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="300.0" NearClippingPlane="1.0" Visibility="Collapsed" ItemTemplate="{StaticResource RestaurantItem}"/>
+            <ARControls:WorldView x:Name="WorldView" MinItemScale="0.1" MaxItemScale="1.0" FarClippingPlane="300.0" NearClippingPlane="1.0" Visibility="Collapsed" ItemTemplate="{StaticResource NavARItem}"/>
         </ARControls:ARDisplay>
 
         <maps:Map x:Name="MyMap" Margin="0,0,0,21" Grid.Row="1" Height="520" VerticalAlignment="Bottom">

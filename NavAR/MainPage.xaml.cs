@@ -61,7 +61,7 @@ namespace NavAR
             GeoLocation = new GeoCoordinate(40.11364d, -88.22469d),
             NextStopID = "UNIGWN",
             MTDId="dummy",
-            RouteName= "DUMMY"
+            Name= "DUMMY"
         };
         //private BusStop TestBusStop = new BusStop
         //{
@@ -109,7 +109,6 @@ namespace NavAR
         //Vibration Variables
         private VibrationDevice notifyUserWithVibration = VibrationDevice.GetDefault();
         private String prevBusStop = "NONE";
-        //private HashSet<BusStop> BusStopsInRealTime = new HashSet<BusStop>();
 
         // Test/Demo
         private List<GeoCoordinate> DemoVisitCoordinates = null;
@@ -171,12 +170,11 @@ namespace NavAR
             CompassTimer.Tick += new EventHandler(DisplayCurrentReading);
             CompassTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             CompassTimer.Start();
-       
 
             // Set off RealTimeScanner
-            RealTimeBusStopScanner.Tick += new EventHandler(LocateBusStopsInRealTime);
-            RealTimeBusStopScanner.Interval = initialTimeSpan;
-            RealTimeBusStopScanner.Start();
+            //RealTimeBusStopScanner.Tick += new EventHandler(LocateBusStopsInRealTime);
+            //RealTimeBusStopScanner.Interval = initialTimeSpan;
+            //RealTimeBusStopScanner.Start();
 
             // Start updating the live tile
             StartPeriodicAgent();
@@ -324,7 +322,7 @@ namespace NavAR
 
             // Initialize API client and send a request
             WsServiceClient client = new WsServiceClient();
-            client.GetStopsByLatLonAsync(MTDAPI.API_KEY, (Decimal)MyCoordinate.Latitude, (Decimal)MyCoordinate.Longitude, 10, String.Empty);
+            client.GetStopsByLatLonAsync(MTDAPI.API_KEY, (Decimal)MyCoordinate.Latitude, (Decimal)MyCoordinate.Longitude, 30, String.Empty);
 
             // Set the complete event handler
             client.GetStopsByLatLonCompleted += 
@@ -333,9 +331,12 @@ namespace NavAR
                     rsp result = requestEventArgs.Result;
                     if (result.stops.Count > 0)
                     {
-                        LocalBusStops.Clear();
+                        //LocalBusStops.Clear();
                         //LocalBusStops.Add(TestBusStop);
-                        
+
+                        HashSet<BusStop> currentStops = new HashSet<BusStop>(LocalBusStops);
+                        List<BusStop> newStops = new List<BusStop>();
+
                         for (int i = 0; i < result.stops.Count; i++)
                         {
                             Stop stop = result.stops[i];
@@ -348,7 +349,34 @@ namespace NavAR
                                 MTDId = stop.stop_id
                             };
 
-                            LocalBusStops.Add(busStop);
+                            // Skip if bus is too far
+                            double distanceTo = CoordinateMath.DistanceBetween(MyCoordinate, busStop.GeoLocation);
+                            if (distanceTo > ScanRadiusInMetres) continue;
+
+                            BusStop found = LocalBusStops.SingleOrDefault(bstop => bstop.Name == busStop.Name);
+                            if (found != null)
+                            {
+                                found.GeoLocation = busStop.GeoLocation;
+                                currentStops.Remove(found);
+                            }
+                            else
+                            {
+                                LocalBusStops.Add(busStop);
+                                newStops.Add(busStop);
+                            }
+                        }
+
+                        // Remove items that went off radar
+                        foreach (BusStop stop in currentStops)
+                        {
+                            LocalBusStops.Remove(stop);
+                        }
+
+                        // Notify user if new stops are detected
+                        if (newStops.Count > 0)
+                        {
+                            notifyUserWithVibration.Vibrate(TimeSpan.FromSeconds(1));
+                            MessageBox.Show("New STOPS detected:\n\n" + String.Join("\n", newStops.Select(s => s.Name).ToList()));
                         }
                     }
                     else
@@ -384,7 +412,7 @@ namespace NavAR
                         if (result.departures.Count > 0)
                         {
                             String buses = "";
-                            for (int i = 0; i < result.departures.Count; i++)
+                            for (int i = 0; i < Math.Min(3, result.departures.Count); i++)
                             {
                                 departure dep = result.departures[i];
                                 String nameRoute = dep.headsign.ToString();
@@ -392,8 +420,7 @@ namespace NavAR
                                     ();
                                 buses += nameRoute + ": " + time + "m, ";
                             }
-                            buses.Trim(new char[] {',', ' '});
-                            stop.Departures = buses;
+                            stop.Departures = buses.TrimEnd(' ').TrimEnd(',');
                         }
                         if (stops.Last().Departures != null)
                         {
@@ -423,22 +450,55 @@ namespace NavAR
                     rsp result = requestEventArgs.Result;
                     if (result.vehicles.Count > 0)
                     {
-                        LocalBuses.Clear();
-                        LocalBuses.Add(TestBus);
-                     
+                        //LocalBuses.Clear();
+
+                        HashSet<Bus> currentBuses = new HashSet<Bus>(LocalBuses);
+                        List<Bus> newBuses = new List<Bus>();
+
                         foreach (vehicle MTDbus in result.vehicles)
                         {
                             GeoCoordinate busCoordinate = new GeoCoordinate((Double)MTDbus.location.lat, (Double)MTDbus.location.lon);
+                            
+                            // Skip if bus is too far
+                            double distanceTo = CoordinateMath.DistanceBetween(MyCoordinate, busCoordinate);
+                            if (distanceTo > ScanRadiusInMetres) continue;
+
                             Bus bus = new Bus
                             {
                                 Coordinate = busCoordinate,
                                 MTDId = MTDbus.vehicle_id,
                                 NextStopID = MTDbus.next_stop_id,
-                                RouteName = MTDbus.trip.route_id.ToString()+" "+MTDbus.trip.direction.ToString()
+                                Name = MTDbus.trip.route_id.ToString()+" "+MTDbus.trip.direction.ToString()
                             };
-                            LocalBuses.Add(bus);
-                            
+
+                            Bus found = LocalBuses.SingleOrDefault(b => b.Name == bus.Name);
+                            if (found != null)
+                            {
+                                found.Coordinate = bus.Coordinate;
+                                currentBuses.Remove(found);
+                            }
+                            else
+                            {
+                                LocalBuses.Add(bus);
+                                newBuses.Add(bus);
+                            }
                         }
+
+                        // Remove items that went off radar
+                        foreach (Bus stop in currentBuses)
+                        {
+                            LocalBuses.Remove(stop);
+                        }
+
+
+                        // Notify user if new buses are detected
+                        if (newBuses.Count > 0)
+                        {
+                            notifyUserWithVibration.Vibrate(TimeSpan.FromSeconds(1));
+                            MessageBox.Show("New BUSES detected:\n\n" + String.Join("\n", newBuses.Select(s => s.Name).ToList()));
+                        }
+
+                        LocalBuses.Add(TestBus);
                     }
                 };
         }
@@ -514,7 +574,7 @@ namespace NavAR
             // Draw markers for nearby bus stops
             if (TappedBusBusStop != null)
             {
-                DrawMapMarker(TappedBusBusStop.GeoLocation, Media.Colors.Yellow, 40, MarkerMapLayer);
+                DrawMapMarker(TappedBusBusStop.GeoLocation, Media.Colors.Yellow, 30, MarkerMapLayer);
             }
 
             foreach (BusStop busStop in LocalBusStops)
@@ -531,10 +591,10 @@ namespace NavAR
                 else
                 {
                     //ARDisplay.ARItems.Add(busStop);
-                    ARDisplay.ARItems.Add(new BusStop() { 
+                    ARDisplay.ARItems.Add(new BusStop { 
                         MTDId = busStop.MTDId,
                         GeoLocation = busStop.GeoLocation, 
-                        Content = busStop.Name,
+                        Name = busStop.Name,
                         IconFilePath = "/Icons/bus_stop.png"
                     });
                 }
@@ -544,33 +604,31 @@ namespace NavAR
             // Drawmarkers for nearby buses
             foreach (Bus bus in LocalBuses)
             {
-                double distanceTo = CoordinateMath.DistanceBetween(MyCoordinate, bus.Coordinate);
-                if (distanceTo <= ScanRadiusInMetres)
-                {
-                    //DrawMapMarker(bus.Coordinate, Media.Colors.Green, MarkerMapLayer);
-                    AddBusMarker(bus, MarkerMapLayer);
-                    ARItem busARItem = new ARItem()
-                    {
-                        Content = bus.MTDId,
-                        GeoLocation = bus.Coordinate
-                    };
+                //DrawMapMarker(bus.Coordinate, Media.Colors.Green, MarkerMapLayer);
+                AddBusMarker(bus, MarkerMapLayer);
 
-                    ARItem found = ARDisplay.ARItems.SingleOrDefault(item => (item.GetType() == typeof(Bus)) && (item as Bus).MTDId == bus.MTDId);
-                    if (found != null)
+                ARItem found = ARDisplay.ARItems.SingleOrDefault(item => 
+                    (item.GetType() == typeof(Bus)) && (item as Bus).MTDId == bus.MTDId);
+                if (found != null)
+                {
+                    found.GeoLocation = bus.GeoLocation;
+                    currentItems.Remove(found);
+                }
+                else
+                {
+                    //ARItem busARItem = new ARItem()
+                    //{
+                    //    Content = bus.MTDId,
+                    //    GeoLocation = bus.Coordinate
+                    //};
+                    //ARDisplay.ARItems.Add(busARItem);
+                    ARDisplay.ARItems.Add(new Bus()
                     {
-                        found.GeoLocation = bus.GeoLocation;
-                        currentItems.Remove(found);
-                    }
-                    else
-                    {
-                        //ARDisplay.ARItems.Add(busARItem);
-                        ARDisplay.ARItems.Add(new Bus() { 
-                            MTDId = bus.MTDId,
-                            GeoLocation = bus.GeoLocation, 
-                            Content = bus.MTDId,
-                            IconFilePath = "/Icons/bus.png"
-                        });
-                    }
+                        MTDId = bus.MTDId,
+                        GeoLocation = bus.GeoLocation,
+                        Name = bus.Name,
+                        IconFilePath = "/Icons/bus.png"
+                    });
                 }
             }
 
@@ -638,7 +696,7 @@ namespace NavAR
             Pushpin currBus = new Pushpin();
             currBus.Background = new SolidColorBrush(Colors.Green);
            
-            currBus.Content =bus.RouteName;
+            currBus.Content =bus.Name;
             currBus.Name = bus.NextStopID;
             currBus.Tap += new EventHandler<System.Windows.Input.GestureEventArgs>(BusMarkerTapped);
 
@@ -684,9 +742,10 @@ namespace NavAR
                 (object requestSender, GetDeparturesByStopCompletedEventArgs requestEventArgs) =>
                 {
                     rsp result = requestEventArgs.Result;
+                    String buses = "Schedule for " + p.Name + ":\n";
                     if (result.departures.Count > 0)
                     {
-                        String buses = "schedule for "+p.Name+":\n";
+                        
                         for (int i = 0; i < result.departures.Count; i++)
                         {
                             departure dep = result.departures[i];
@@ -698,7 +757,7 @@ namespace NavAR
                     }
                     else 
                     {
-                        MessageBox.Show("There are no buses");
+                        MessageBox.Show(buses + "There are no buses");
                     }
                 };
         }

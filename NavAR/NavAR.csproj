@@ -153,12 +153,12 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Assets\Tiles\FlipTileLargeBack.png" />
-    <Content Include="Icons\but_stop.png" />
     <Content Include="Icons\appbar.map.png" />
     <Content Include="Icons\appbar.rotate.png" />
     <Content Include="Icons\appbar.video.png" />
     <Content Include="Icons\bus.png" />
     <Content Include="Icons\appbar.refresh.png" />
+    <Content Include="Icons\bus_stop.png" />
     <Content Include="ServiceReferences.ClientConfig" />
   </ItemGroup>
   <ItemGroup>

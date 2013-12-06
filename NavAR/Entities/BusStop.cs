@@ -16,6 +16,7 @@ namespace NavAR.Entities
     {
         private string _name;
         private string _mtdid;
+        private string _iconfilepath;
 
         public string Name
         {
@@ -31,7 +32,7 @@ namespace NavAR.Entities
                     NotifyPropertyChanged(() => Name);
 
                     // Update the Content property as well for controls that
-                    // only show this memeber
+                    // only show this member
                     Content = value;
                 }
             }
@@ -51,13 +52,31 @@ namespace NavAR.Entities
                     NotifyPropertyChanged(() => MTDId);
 
                     // Update the Content property as well for controls that
-                    // only show this memeber
+                    // only show this member
                     Content = value;
                 }
             }
         }
 
-        public String IconFilePath { get; set; }
+        public string IconFilePath
+        {
+            get
+            {
+                return _iconfilepath;
+            }
+            set
+            {
+                if (_iconfilepath != value)
+                {
+                    _iconfilepath = value;
+                    NotifyPropertyChanged(() => IconFilePath);
+
+                    // Update the Content property as well for controls that
+                    // only show this member
+                    Content = value;
+                }
+            }
+        }
 
         public override int GetHashCode()
         {

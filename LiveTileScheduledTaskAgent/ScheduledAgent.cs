@@ -144,7 +144,7 @@ namespace LiveTileScheduledTaskAgent
             {
                 Foreground = new SolidColorBrush(Colors.White),
                 FontSize = 30,
-                Text = ""
+                Text = String.Empty
             };
 
             // Read stops from the main app
@@ -153,7 +153,7 @@ namespace LiveTileScheduledTaskAgent
             // Find some bus stop
             if (sharedStops == null || sharedStops.Count <= 0)
             {
-                textBlock.Text += "No local poinits of interest";
+                textBlock.Text += "No local points of interest";
             }
             else
             {
@@ -169,8 +169,8 @@ namespace LiveTileScheduledTaskAgent
             var height = textBlock.ActualHeight;
  
             // Place the text in the lower right corner
-            Canvas.SetLeft(textBlock, 10);
-            Canvas.SetTop(textBlock, 60);
+            Canvas.SetLeft(textBlock, 20);
+            Canvas.SetTop(textBlock, 90);
  
             // Create a canvas and place the image and text on it
             var canvas = new Canvas
@@ -192,7 +192,7 @@ namespace LiveTileScheduledTaskAgent
         }
 
         /// <summary>
-        /// 
+        /// Save the generated tile image to shared storage and URI addressing later
         /// </summary>
         /// <param name="wbmp"></param>
         private void SaveTileImage(WriteableBitmap wbmp)
@@ -211,13 +211,14 @@ namespace LiveTileScheduledTaskAgent
         }
 
         /// <summary>
-        /// 
+        /// Update the current application's Live Tile with the image stored previously
         /// </summary>
         public void UpdateTileIcon()
         {
             FlipTileData tileData = new FlipTileData
             {
-                WideBackBackgroundImage = new Uri("isostore:/" + TILE_TEXT_IMAGE_URI, UriKind.RelativeOrAbsolute)
+                WideBackBackgroundImage = new Uri("isostore:/" + TILE_TEXT_IMAGE_URI, UriKind.RelativeOrAbsolute),
+                Count = 3
             };
 
             var tile = ShellTile.ActiveTiles.First();
