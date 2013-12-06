@@ -55,7 +55,21 @@ namespace NavAR
 
         // Flags/Modes
         private readonly bool DEMO = false;
-        
+        private Bus TestBus = new Bus
+        {
+            Coordinate = new GeoCoordinate(40.11364d, -88.22469d),
+            GeoLocation = new GeoCoordinate(40.11364d, -88.22469d),
+            NextStopID = "NavARDemo",
+            MTDId="dummy",
+            RouteName= "DUMMY"
+        };
+        private BusStop TestBusStop = new BusStop
+        {
+            GeoLocation = new GeoCoordinate(40.11384d, -88.22489d),
+            Name = "Siebel Test Stop",
+            MTDId = "NavARDemo"
+        };
+
         // User Settings
         public bool Heading = true;
 
@@ -72,8 +86,8 @@ namespace NavAR
         private HashSet<Bus> LocalBuses = new HashSet<Bus>();
         private HashSet<BusStop> LocalBusStops = new HashSet<BusStop>();
         private BusStop MyBusStop = null;
+        private BusStop TappedBusBusStop = null;
         private HashSet<departure> MTDDepartures= new HashSet<departure>();
-        private Dictionary<Bus, String> RoutesByBuses = new Dictionary<Bus, String>();
 
         private double ScanRadiusInMetres = 500d;
 
@@ -320,7 +334,8 @@ namespace NavAR
                     if (result.stops.Count > 0)
                     {
                         LocalBusStops.Clear();
-
+                        LocalBusStops.Add(TestBusStop);
+                        
                         for (int i = 0; i < result.stops.Count; i++)
                         {
                             Stop stop = result.stops[i];
@@ -407,22 +422,21 @@ namespace NavAR
                     rsp result = requestEventArgs.Result;
                     if (result.vehicles.Count > 0)
                     {
-                        LocalBuses.Clear(); 
-                        LocalBuses = new HashSet<Bus>();
-                        RoutesByBuses.Clear();
-                        RoutesByBuses = new Dictionary<Bus, String>();
-
+                        LocalBuses.Clear();
+                        LocalBuses.Add(TestBus);
+                     
                         foreach (vehicle MTDbus in result.vehicles)
                         {
                             GeoCoordinate busCoordinate = new GeoCoordinate((Double)MTDbus.location.lat, (Double)MTDbus.location.lon);
                             Bus bus = new Bus
                             {
                                 Coordinate = busCoordinate,
-                                MTDId = MTDbus.vehicle_id
+                                MTDId = MTDbus.vehicle_id,
+                                NextStopID = MTDbus.next_stop_id,
+                                RouteName = MTDbus.trip.route_id.ToString()+" "+MTDbus.trip.direction.ToString()
                             };
-                            String currRoute = MTDbus.trip.route_id.ToString()+" "+MTDbus.trip.direction.ToString();
                             LocalBuses.Add(bus);
-                            RoutesByBuses.Add(bus, currRoute);
+                            
                         }
                     }
                 };
@@ -494,9 +508,14 @@ namespace NavAR
         {
             MyMap.Layers.Clear();
             MarkerMapLayer = new MapLayer();
-
+            
             HashSet<ARItem> currentItems = new HashSet<ARItem>(ARDisplay.ARItems);
             // Draw markers for nearby bus stops
+            if (TappedBusBusStop != null)
+            {
+                DrawMapMarker(TappedBusBusStop.GeoLocation, Media.Colors.Yellow, 40, MarkerMapLayer);
+            }
+
             foreach (BusStop busStop in LocalBusStops)
             {
                 //DrawMapMarker(busStop.GeoLocation, Media.Colors.Blue, MarkerMapLayer);
@@ -510,11 +529,15 @@ namespace NavAR
                 }
                 else
                 {
-                    ARDisplay.ARItems.Add(busStop);
+                    //ARDisplay.ARItems.Add(busStop);
+                    ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name });
                 }
+<<<<<<< HEAD
                 //ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name });
+=======
+>>>>>>> a56d35476efe0cb4c774b0f096a3c74c5331022d
             }
-
+         
             // Drawmarkers for nearby buses
             foreach (Bus bus in LocalBuses)
             {
@@ -537,7 +560,8 @@ namespace NavAR
                     }
                     else
                     {
-                        ARDisplay.ARItems.Add(busARItem);
+                        //ARDisplay.ARItems.Add(busARItem);
+                        ARDisplay.ARItems.Add(new ARItem() { GeoLocation = bus.GeoLocation, Content = bus.MTDId });
                     }
                 }
             }
@@ -552,7 +576,7 @@ namespace NavAR
             if (MyCoordinate != null)
             {
                 DrawAccuracyRadius(MarkerMapLayer);
-                DrawMapMarker(MyCoordinate, Media.Colors.Red, MarkerMapLayer);
+                DrawMapMarker(MyCoordinate, Media.Colors.Red, 20, MarkerMapLayer);
             }
 
             MyMap.Layers.Add(MarkerMapLayer);
@@ -584,7 +608,21 @@ namespace NavAR
             overlay.PositionOrigin = new WinPoint(0.5, 0.5);
             mapLayer.Add(overlay);
         }
+        private void BusMarkerTapped(object sender, EventArgs e)
+        {
+            var currBus = sender as Pushpin;
 
+            //get id of the next stop
+            String stopID = currBus.Name;
+            BusStop found = LocalBusStops.FirstOrDefault(stop => stopID.Contains(stop.MTDId));
+            if (found != null)
+            {
+                MessageBox.Show("found " + found.Name);
+                TappedBusBusStop = found;
+            } 
+            else
+                MessageBox.Show("The bus stop is too far");
+        }
         ///
         /// Adds a pushpin marker that represents a bus. The marker shows the number and the color of the route
         /// 
@@ -592,16 +630,16 @@ namespace NavAR
             Pushpin currBus = new Pushpin();
             currBus.Background = new SolidColorBrush(Colors.Green);
            
-            String myRoute = RoutesByBuses[bus];
-            currBus.Content = myRoute;
+            currBus.Content =bus.RouteName;
+            currBus.Name = bus.NextStopID;
+            currBus.Tap += new EventHandler<System.Windows.Input.GestureEventArgs>(BusMarkerTapped);
 
+ 
             MapOverlay overlay = new MapOverlay();
             overlay.Content = currBus;
             overlay.GeoCoordinate = new GeoCoordinate(bus.Coordinate.Latitude, bus.Coordinate.Longitude);
             overlay.PositionOrigin = new WinPoint(0.0, 1.0);
-            mapLayer.Add(overlay);
-           
-           
+            mapLayer.Add(overlay); 
         }
         /// <summary>
         /// Draws a colored marker for a coordinate on a map layer
@@ -609,16 +647,14 @@ namespace NavAR
         /// <param name="coordinate"></param>
         /// <param name="color"></param>
         /// <param name="mapLayer"></param>
-        private void DrawMapMarker(GeoCoordinate coordinate, WinColor color, MapLayer mapLayer)
+        private void DrawMapMarker(GeoCoordinate coordinate, WinColor color, int Radius, MapLayer mapLayer)
         {
-
             Ellipse myCircle = new Ellipse();
             myCircle.Fill = new SolidColorBrush(color);
-            myCircle.Height = 20;
-            myCircle.Width = 20;
+            myCircle.Height = Radius;
+            myCircle.Width = Radius;
             myCircle.Opacity = 50;
 
-            
             // Enable marker to be tapped for location information
             myCircle.Tag = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
             myCircle.MouseLeftButtonUp += new MouseButtonEventHandler(Marker_Click);
