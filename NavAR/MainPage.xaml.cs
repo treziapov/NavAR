@@ -59,16 +59,16 @@ namespace NavAR
         {
             Coordinate = new GeoCoordinate(40.11364d, -88.22469d),
             GeoLocation = new GeoCoordinate(40.11364d, -88.22469d),
-            NextStopID = "NavARDemo",
+            NextStopID = "UNIGWN",
             MTDId="dummy",
             RouteName= "DUMMY"
         };
-        private BusStop TestBusStop = new BusStop
-        {
-            GeoLocation = new GeoCoordinate(40.11384d, -88.22489d),
-            Name = "Siebel Test Stop",
-            MTDId = "NavARDemo"
-        };
+        //private BusStop TestBusStop = new BusStop
+        //{
+        //    GeoLocation = new GeoCoordinate(40.11384d, -88.22489d),
+        //    Name = "Siebel Test Stop",
+        //    MTDId = "UNIGWN"
+        //};
 
         // User Settings
         public bool Heading = true;
@@ -334,7 +334,7 @@ namespace NavAR
                     if (result.stops.Count > 0)
                     {
                         LocalBusStops.Clear();
-                        LocalBusStops.Add(TestBusStop);
+                        //LocalBusStops.Add(TestBusStop);
                         
                         for (int i = 0; i < result.stops.Count; i++)
                         {
@@ -376,7 +376,7 @@ namespace NavAR
             // Get departures and also store them
             foreach (var stop in stops)
             {
-                client.GetDeparturesByStopAsync(MTDAPI.API_KEY, stop.MTDId, String.Empty, 60, 5);
+                client.GetDeparturesByStopAsync(MTDAPI.API_KEY, stop.MTDId, String.Empty, 60, 3);
                 client.GetDeparturesByStopCompleted +=
                     (object requestSender, GetDeparturesByStopCompletedEventArgs requestEventArgs) =>
                     {
@@ -388,7 +388,8 @@ namespace NavAR
                             {
                                 departure dep = result.departures[i];
                                 String nameRoute = dep.headsign.ToString();
-                                String time = dep.expected_mins.ToString();
+                                String time = dep.expected_mins.ToString
+                                    ();
                                 buses += nameRoute + ": " + time + "m, ";
                             }
                             buses.Trim(new char[] {',', ' '});
@@ -530,7 +531,12 @@ namespace NavAR
                 else
                 {
                     //ARDisplay.ARItems.Add(busStop);
-                    ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name });
+                    ARDisplay.ARItems.Add(new BusStop() { 
+                        MTDId = busStop.MTDId,
+                        GeoLocation = busStop.GeoLocation, 
+                        Content = busStop.Name,
+                        IconFilePath = "/Icons/bus_stop.png"
+                    });
                 }
                 //ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name });
             }
@@ -558,7 +564,12 @@ namespace NavAR
                     else
                     {
                         //ARDisplay.ARItems.Add(busARItem);
-                        ARDisplay.ARItems.Add(new ARItem() { GeoLocation = bus.GeoLocation, Content = bus.MTDId });
+                        ARDisplay.ARItems.Add(new Bus() { 
+                            MTDId = bus.MTDId,
+                            GeoLocation = bus.GeoLocation, 
+                            Content = bus.MTDId,
+                            IconFilePath = "/Icons/bus.png"
+                        });
                     }
                 }
             }

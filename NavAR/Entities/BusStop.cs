@@ -57,6 +57,8 @@ namespace NavAR.Entities
             }
         }
 
+        public String IconFilePath { get; set; }
+
         public override int GetHashCode()
         {
             return this.MTDId.GetHashCode();

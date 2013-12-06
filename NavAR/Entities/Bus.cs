@@ -18,6 +18,8 @@ namespace NavAR.Entities
         public String MTDId { get; set; }
         public String RouteName { get; set; }
         public String NextStopID { get; set; }
+        public String IconFilePath { get; set; }
+
         public override int GetHashCode()
         {
             return this.MTDId.GetHashCode();

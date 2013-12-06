@@ -49,7 +49,7 @@
                         <RowDefinition Height="0.33*"/>
                         <RowDefinition Height="16"/>
                     </Grid.RowDefinitions>
-                    <Image Grid.RowSpan="3" Source="/Icons/bus.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Image Grid.RowSpan="3" Source="{Binding IconFilePath}" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
                     <TextBlock x:Name="NameBlock" TextWrapping="NoWrap" Text="{Binding Name}" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" d:LayoutOverrides="Width" Grid.Column="1" TextTrimming="WordEllipsis"/>
                     <TextBlock x:Name="TypeBlock" TextWrapping="NoWrap" Text="{Binding MTDId}" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Grid.Column="1" d:LayoutOverrides="Width" Grid.Row="1" TextTrimming="WordEllipsis"/>
                     <!-- Could use this to gauge distance later -->
