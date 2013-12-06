@@ -7,6 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
     xmlns:ARControls="clr-namespace:GART.Controls;assembly=GART.WP8"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Maps.Toolkit;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:maptk="clr-namespace:Microsoft.Phone.Maps.Toolkit;assembly=Microsoft.Phone.Controls.Toolkit"
     x:Class="NavAR.MainPage"
     mc:Ignorable="d" 
     d:DesignWidth="480" 
@@ -90,7 +92,7 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="10,10,14,-10"/>
-
+        <!--
         <Path Data="M87.026947,24.16836 L102.66625,48.669857 L94.666451,48.669857 L94.666451,84.674995 L78.666855,84.674995 L78.666855,48.669857 L70.667053,48.669857 z" 
               HorizontalAlignment="Right" Height="18.269" Stretch="Fill" UseLayoutRounding="False" VerticalAlignment="Bottom" Width="9.664" RenderTransformOrigin="0.5,1" Margin="0,0,55.336,538" Grid.Row="1">
             <Path.RenderTransform>
@@ -107,6 +109,7 @@
                 </LinearGradientBrush>
             </Path.Fill>
         </Path>
+        -->
 
         <ARControls:ARDisplay x:Name="ARDisplay" AttitudeRefreshRate="50" MovementThreshold="10" Margin="12,20,8,0" Grid.Row="1" >
             <ARControls:VideoPreview x:Name="VideoPreview" Margin="10,-5,0,10" Visibility="Collapsed"/>
@@ -117,7 +120,9 @@
             <maps:Map.RenderTransform>
                 <CompositeTransform x:Name="MapTransform" Rotation="0" CenterX="240" CenterY="260"/>
             </maps:Map.RenderTransform>
+ 
         </maps:Map>
+
 
         <!--Uncomment to see an alignment grid to help ensure your controls are
             aligned on common boundaries.  The image has a top margin of -32px to
@@ -127,5 +132,6 @@
             Before shipping remove this XAML and the image itself.-->
         <!--<Image Source="/Assets/AlignmentGrid.png" VerticalAlignment="Top" Height="800" Width="480" Margin="0,-32,0,0" Grid.Row="0" Grid.RowSpan="2" IsHitTestVisible="False" />-->
     </Grid>
+
 
 </phone:PhoneApplicationPage>
