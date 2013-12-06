@@ -319,7 +319,7 @@ namespace NavAR
                     rsp result = requestEventArgs.Result;
                     if (result.stops.Count > 0)
                     {
-                        LocalBusStops.Clear();
+                        //LocalBusStops.Clear();
 
                         for (int i = 0; i < result.stops.Count; i++)
                         {
@@ -481,9 +481,9 @@ namespace NavAR
                 }
                 else
                 {
-                    ARDisplay.ARItems.Add(busStop);
+                    //ARDisplay.ARItems.Add(busStop);
+                    ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name });
                 }
-                //ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name});
             }
 
             // Drawmarkers for nearby buses
