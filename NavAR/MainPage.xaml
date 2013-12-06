@@ -32,7 +32,8 @@
                         <RowDefinition Height="0.33*"/>
                         <RowDefinition Height="16"/>
                     </Grid.RowDefinitions>
-                    <TextBlock x:Name="NameBlock" TextWrapping="NoWrap" Text="{Binding Content}" FontSize="32" VerticalAlignment="Center" Margin="0,0,4,0" d:LayoutOverrides="Width" Grid.Column="1" TextTrimming="WordEllipsis"/>
+                    <Image Grid.RowSpan="3" Source="Icons/bus.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock x:Name="NameBlock" TextWrapping="NoWrap" Text="{Binding Content}" FontSize="16" VerticalAlignment="Center" Margin="0,0,4,0" d:LayoutOverrides="Width" Grid.Column="1" TextTrimming="WordEllipsis"/>
                 </Grid>
             </Border>
         </DataTemplate>

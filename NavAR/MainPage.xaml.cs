@@ -508,7 +508,8 @@ namespace NavAR
                     }
                     else
                     {
-                        ARDisplay.ARItems.Add(busARItem);
+                        //ARDisplay.ARItems.Add(busARItem);
+                        ARDisplay.ARItems.Add(new ARItem() { GeoLocation = bus.GeoLocation, Content = bus.MTDId });
                     }
                 }
             }
