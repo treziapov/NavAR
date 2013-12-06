@@ -664,18 +664,18 @@ namespace NavAR
             mapLayer.Add(overlay);
         }
         
-        private void ShowSchedule(UserLocationMarker p) 
+        private void ShowSchedule(BusStop p) 
         {
             WsServiceClient client = new WsServiceClient();
            
-            client.GetDeparturesByStopAsync(MTDAPI.API_KEY, p.Name.ToString(), String.Empty, 60, 5);
+            client.GetDeparturesByStopAsync(MTDAPI.API_KEY, p.MTDId, String.Empty, 60, 5);
             client.GetDeparturesByStopCompleted +=
                 (object requestSender, GetDeparturesByStopCompletedEventArgs requestEventArgs) =>
                 {
                     rsp result = requestEventArgs.Result;
                     if (result.departures.Count > 0)
                     {
-                        String buses = "";
+                        String buses = "schedule for "+p.Name+":\n";
                         for (int i = 0; i < result.departures.Count; i++)
                         {
                             departure dep = result.departures[i];
@@ -695,11 +695,11 @@ namespace NavAR
 
         private void StopMarkerTapped(object sender, EventArgs e)
         {
-            var currStop = sender as UserLocationMarker;
-
+            var currMarker = sender as UserLocationMarker;
+            BusStop currStop = (BusStop)currMarker.Content;
             ShowSchedule(currStop);
-
-            GeoCoordinate geoCoordinate = (GeoCoordinate)currStop.Tag;
+            
+            GeoCoordinate geoCoordinate = (GeoCoordinate)currMarker.Tag;
 
             MyQuery = new RouteQuery();
 
@@ -739,7 +739,7 @@ namespace NavAR
             currStop.Name = busStop.MTDId.ToString();
             currStop.Tag = new GeoCoordinate(busStop.GeoLocation.Latitude, busStop.GeoLocation.Longitude);
             currStop.Tap += new EventHandler<System.Windows.Input.GestureEventArgs>(StopMarkerTapped);
-
+            currStop.Content = busStop;
             // Create a MapOverlay and add marker
             MapOverlay overlay = new MapOverlay();
             overlay.Content = currStop;
