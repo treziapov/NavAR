@@ -75,6 +75,7 @@ namespace NavAR
         private HashSet<BusStop> LocalBusStops = new HashSet<BusStop>();
         private BusStop MyBusStop = null;
         private HashSet<departure> MTDDepartures= new HashSet<departure>();
+        private Dictionary<Bus, String> RoutesByBuses = new Dictionary<Bus, String>();
 
         private double ScanRadiusInMetres = 500d;
 
@@ -153,10 +154,12 @@ namespace NavAR
             BusScanTimer.Interval = initialTimeSpan;
             BusScanTimer.Start();
 
+            
             // Set off Compass
             CompassTimer.Tick += new EventHandler(DisplayCurrentReading);
             CompassTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             CompassTimer.Start();
+       
 
             // Set off RealTimeScanner
             RealTimeBusStopScanner.Tick += new EventHandler(LocateBusStopsInRealTime);
@@ -380,6 +383,8 @@ namespace NavAR
                     {
                         LocalBuses.Clear(); 
                         LocalBuses = new HashSet<Bus>();
+                        RoutesByBuses.Clear();
+                        RoutesByBuses = new Dictionary<Bus, String>();
 
                         foreach (vehicle MTDbus in result.vehicles)
                         {
@@ -389,7 +394,9 @@ namespace NavAR
                                 Coordinate = busCoordinate,
                                 MTDId = MTDbus.vehicle_id
                             };
+                            String currRoute = MTDbus.trip.route_id.ToString()+" "+MTDbus.trip.direction.ToString();
                             LocalBuses.Add(bus);
+                            RoutesByBuses.Add(bus, currRoute);
                         }
                     }
                 };
@@ -467,8 +474,8 @@ namespace NavAR
             foreach (BusStop busStop in LocalBusStops)
             {
                 //DrawMapMarker(busStop.GeoLocation, Media.Colors.Blue, MarkerMapLayer);
-                AddPushPinStop(busStop, MarkerMapLayer);
-            
+                AddStopMarker(busStop, MarkerMapLayer);
+
                 ARItem found = ARDisplay.ARItems.SingleOrDefault(item => (item.GetType() == typeof(BusStop)) && (item as BusStop).Name == busStop.Name);
                 if (found != null)
                 {
@@ -488,9 +495,8 @@ namespace NavAR
                 double distanceTo = CoordinateMath.DistanceBetween(MyCoordinate, bus.Coordinate);
                 if (distanceTo <= ScanRadiusInMetres)
                 {
-                    DrawMapMarker(bus.Coordinate, Media.Colors.Green, MarkerMapLayer);
-                    //AddPushPin(bus.GeoLocation, Media.Colors.Green, MarkerMapLayer, "bus", "some bus");
-                    
+                    //DrawMapMarker(bus.Coordinate, Media.Colors.Green, MarkerMapLayer);
+                    AddBusMarker(bus, MarkerMapLayer);
                     ARItem busARItem = new ARItem()
                     {
                         Content = bus.MTDId,
@@ -553,6 +559,24 @@ namespace NavAR
             mapLayer.Add(overlay);
         }
 
+        ///
+        /// Adds a pushpin marker that represents a bus. The marker shows the number and the color of the route
+        /// 
+        private void AddBusMarker(Bus bus, MapLayer mapLayer) {
+            Pushpin currBus = new Pushpin();
+            currBus.Background = new SolidColorBrush(Colors.Green);
+           
+            String myRoute = RoutesByBuses[bus];
+            currBus.Content = myRoute;
+
+            MapOverlay overlay = new MapOverlay();
+            overlay.Content = currBus;
+            overlay.GeoCoordinate = new GeoCoordinate(bus.Coordinate.Latitude, bus.Coordinate.Longitude);
+            overlay.PositionOrigin = new WinPoint(0.0, 1.0);
+            mapLayer.Add(overlay);
+           
+           
+        }
         /// <summary>
         /// Draws a colored marker for a coordinate on a map layer
         /// </summary>
@@ -561,25 +585,27 @@ namespace NavAR
         /// <param name="mapLayer"></param>
         private void DrawMapMarker(GeoCoordinate coordinate, WinColor color, MapLayer mapLayer)
         {
-            // Create a map marker
-            Polygon polygon = new Polygon();
-            polygon.Points.Add(new WinPoint(0, 0));
-            polygon.Points.Add(new WinPoint(0, 75));
-            polygon.Points.Add(new WinPoint(25, 0));
-            polygon.Fill = new SolidColorBrush(color);
+
+            Ellipse myCircle = new Ellipse();
+            myCircle.Fill = new SolidColorBrush(color);
+            myCircle.Height = 20;
+            myCircle.Width = 20;
+            myCircle.Opacity = 50;
+
             
             // Enable marker to be tapped for location information
-            polygon.Tag = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
-            polygon.MouseLeftButtonUp += new MouseButtonEventHandler(Marker_Click);
+            myCircle.Tag = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
+            myCircle.MouseLeftButtonUp += new MouseButtonEventHandler(Marker_Click);
 
             // Create a MapOverlay and add marker
             MapOverlay overlay = new MapOverlay();
-            overlay.Content = polygon;
+            overlay.Content = myCircle;
             overlay.GeoCoordinate = new GeoCoordinate(coordinate.Latitude, coordinate.Longitude);
             overlay.PositionOrigin = new WinPoint(0.0, 1.0);
             mapLayer.Add(overlay);
         }
-        private void ShowSchedule(Pushpin p) 
+        
+        private void ShowSchedule(UserLocationMarker p) 
         {
             WsServiceClient client = new WsServiceClient();
            
@@ -596,8 +622,8 @@ namespace NavAR
                             departure dep = result.departures[i];
                             String nameRoute = dep.headsign.ToString();
                             String time = dep.expected_mins.ToString();
-                            buses+=nameRoute+" in "+time+"min, ";
-                        }
+                            buses += nameRoute + " in " + time + "min\n";
+                        } 
                         MessageBox.Show(buses);
                     }
                     else 
@@ -605,15 +631,16 @@ namespace NavAR
                         MessageBox.Show("There are no buses");
                     }
                 };
-            //MessageBox.Show("Unsuccesfull query");
         }
-        private void StopPinTapped(object sender, EventArgs e) 
+
+
+        private void StopMarkerTapped(object sender, EventArgs e)
         {
-            var p = sender as Pushpin;
-            
-            ShowSchedule(p);
-            
-            GeoCoordinate geoCoordinate = (GeoCoordinate)p.Tag;
+            var currStop = sender as UserLocationMarker;
+
+            ShowSchedule(currStop);
+
+            GeoCoordinate geoCoordinate = (GeoCoordinate)currStop.Tag;
 
             MyQuery = new RouteQuery();
 
@@ -641,29 +668,27 @@ namespace NavAR
                     MyQuery.Dispose();
                 }
             };
-            MyQuery.QueryAsync(); 
-
+            MyQuery.QueryAsync();
         }
-        private void AddPushPinStop(BusStop busStop, MapLayer mapLayer) 
-        {
-            // Create a map pushpin
-            Pushpin pp = new Pushpin();
 
-            pp.Content = busStop.Name.ToString();
-            pp.Background = new SolidColorBrush(Media.Colors.Blue);
-            pp.Name = busStop.MTDId.ToString();
-            pp.Tag = new GeoCoordinate(busStop.GeoLocation.Latitude, busStop.GeoLocation.Longitude); ;
-            
-            pp.Tap+= new EventHandler<System.Windows.Input.GestureEventArgs>(StopPinTapped);
-            
+        private void AddStopMarker(BusStop busStop, MapLayer mapLayer) 
+        {
+            // Create a stop marker
+            UserLocationMarker currStop = new UserLocationMarker();
+            currStop.Width = 30;
+            currStop.Height = 30;
+            currStop.Name = busStop.MTDId.ToString();
+            currStop.Tag = new GeoCoordinate(busStop.GeoLocation.Latitude, busStop.GeoLocation.Longitude);
+            currStop.Tap += new EventHandler<System.Windows.Input.GestureEventArgs>(StopMarkerTapped);
+
             // Create a MapOverlay and add marker
             MapOverlay overlay = new MapOverlay();
-            overlay.Content = pp;
+            overlay.Content = currStop;
             overlay.GeoCoordinate = new GeoCoordinate(busStop.GeoLocation.Latitude, busStop.GeoLocation.Longitude);
             overlay.PositionOrigin = new WinPoint(0.0, 1.0);
             mapLayer.Add(overlay);
-        } 
-
+        }
+      
 
         /// <summary>
         /// Event fired whenever any of the markers are clicked
@@ -709,13 +734,14 @@ namespace NavAR
         /// <summary>
         /// Get Current Compass reading
         /// </summary>
+        
         private void DisplayCurrentReading(object sender, object args)
         {
             CompassReading reading = Compass.GetCurrentReading();
             if (reading != null)
             {
                 double angle = reading.HeadingTrueNorth ?? reading.HeadingMagneticNorth;
-                MyTransform.Rotation = angle;
+                //MyTransform.Rotation = angle;
 
                 if (Heading)
                 {
