@@ -153,6 +153,7 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Assets\Tiles\FlipTileLargeBack.png" />
+    <Content Include="Icons\but_stop.png" />
     <Content Include="Icons\appbar.map.png" />
     <Content Include="Icons\appbar.rotate.png" />
     <Content Include="Icons\appbar.video.png" />

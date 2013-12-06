@@ -532,16 +532,7 @@ namespace NavAR
                     //ARDisplay.ARItems.Add(busStop);
                     ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name });
                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                 //ARDisplay.ARItems.Add(new ARItem() { GeoLocation = busStop.GeoLocation, Content = busStop.Name });
-=======
->>>>>>> a56d35476efe0cb4c774b0f096a3c74c5331022d
-=======
->>>>>>> a56d35476efe0cb4c774b0f096a3c74c5331022d
-=======
->>>>>>> a56d35476efe0cb4c774b0f096a3c74c5331022d
             }
          
             // Drawmarkers for nearby buses
