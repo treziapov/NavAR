@@ -43,16 +43,14 @@ using GART.Data;
 using GART.Controls;
 using System.IO.IsolatedStorage;
 using IsolatedStorage;
+using ToolStackPNGWriterLib;
 
 namespace NavAR
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        IsolatedStorageSettings settings = IsolatedStorageSettings.ApplicationSettings;
-
         private PeriodicTask PeriodicTask;
         private String PeriodicTaskName = "Update Live Tile";
-        public bool EnableAgents = true;
 
         // Flags/Modes
         private readonly bool DEMO = false;
@@ -172,7 +170,6 @@ namespace NavAR
         private void StartPeriodicAgent()
         {
             // Check if old task is running, remove if it is
-            EnableAgents = true;
             IEnumerable<PeriodicTask> actions = ScheduledActionService.GetActions<PeriodicTask>();
             PeriodicTask = ScheduledActionService.Find(PeriodicTaskName) as PeriodicTask;
             if (PeriodicTask != null)
@@ -346,7 +343,7 @@ namespace NavAR
                 };
 
             // Store the AR items in the shared isolated storage
-            List<StoredBusStop> stops = LocalBusStops.Select(stop => 
+            List<StoredBusStop> stops = LocalBusStops.Take(Math.Min(5, LocalBusStops.Count)).Select(stop => 
                 new StoredBusStop()
                 {
                     Name = stop.Name,
@@ -692,14 +689,13 @@ namespace NavAR
                         {
                             Stop stop = result.stops[i];
                             StopPoint stopPoint = stop.stop_points[0];
-                            System.Diagnostics.Debug.WriteLine(stop.distance);
 
                             //if distance between my location and stop is less than 300 feet, vibrate
                             if (stop.distance < 300 && prevBusStop != stop.stop_id)
                             {
-                                notifyUserWithVibration.Vibrate(TimeSpan.FromSeconds(3));
+                                notifyUserWithVibration.Vibrate(TimeSpan.FromSeconds(1));
                                 prevBusStop = stop.stop_id;
-                                MessageBox.Show("You are close to" + stop.stop_name);
+                                MessageBox.Show("You are close to " + stop.stop_name);
                                 break;
                             }
                         }

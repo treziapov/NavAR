@@ -35,6 +35,7 @@ namespace IsolatedStorage
         // Named mutex
         private static Mutex Mutex = new Mutex(false, "NavARSharedData");
         private static String BusStopsFileName = "BusStops.txt";
+        private static String LiveTileTextFileName = "LiveTileText.txt";
 
         /// <summary>
         /// Read Isolated Storage
